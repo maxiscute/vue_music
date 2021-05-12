@@ -1,3 +1,4 @@
+/* eslint-disable */
 // 获取签名方法
 const getSecuritySign = require('../sign')
 // 请求相关函数

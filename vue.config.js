@@ -1,5 +1,5 @@
 // const registerRouter = require('./backend/router')
-const registerRouter = require('./node-back')
+const registerRouter = require('./node-backend')
 
 module.exports = {
   css: {
