@@ -1,6 +1,6 @@
 <template>
-  <div class="recommend">
-<!--    滚动组件-->
+  <div class="recommend" v-loading:[message]="loading">
+    <!--    滚动组件-->
     <scroller class="scroller_wrapper">
       <div>
         <!--    轮播图-->
@@ -13,7 +13,8 @@
         </div>
         <!--   热门歌单推荐-->
         <div class="recommend__list">
-          <h1 class="recommend__list__title">热门歌单</h1>
+          <h1 class="recommend__list__title"
+              v-show="!loading">热门歌单</h1>
           <ul>
             <li
               v-for="item in albums"
@@ -23,7 +24,7 @@
               <div class="recommend__list__item__icon">
                 <img
                   width="60" height="60"
-                  :src="item.pic" alt="">
+                  v-lazy="item.pic" alt="">
               </div>
               <div class="recommend__list__item__text">
                 <h2 class="name">
@@ -51,8 +52,17 @@ export default {
   name: 'recommend',
   data () {
     return {
+      // banner
       sliders: [],
-      albums: []
+      // 歌单
+      albums: [],
+      // 加载文字
+      message: '正在载入中...'
+    }
+  },
+  computed: {
+    loading () {
+      return !this.sliders.length && !this.albums.length
     }
   },
   components: {
@@ -76,9 +86,11 @@ export default {
   width: 100%;
   top: 88px;
   bottom: 0;
-  .scroller_wrapper{
+
+  .scroller_wrapper {
     height: 100%;
     overflow: hidden;
+
     .slider {
       &__wrapper {
         position: relative;
