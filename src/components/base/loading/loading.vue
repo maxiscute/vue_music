@@ -19,7 +19,7 @@ export default {
   // },
   setup () {
     // 对loading directive提供的内部方法, 来动态修改loadingMessage的值
-    const loadingMsg = ref('正在载入...')
+    const loadingMsg = ref('正在载入中...')
 
     // 对loading directive提供的内部方法, 来动态修改loadingMessage的值
     const setLoadingMsg = msg => {
