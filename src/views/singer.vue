@@ -1,6 +1,6 @@
 <template>
   <div class="singer" v-loading="!singers.length">
-    <singer-list :data="singers"/>
+    <singer-list :data="singers" v-show="singers.length"/>
   </div>
 </template>
 

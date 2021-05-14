@@ -1,6 +1,8 @@
 import { nextTick, ref, watch, computed } from 'vue'
 
 export default function useFixedTitle (props) {
+  // 固定栏高
+  const TITLE_HEIGHT = 30
   // 列表对象
   const groupRef = ref(null)
   // 区间高度
@@ -9,6 +11,8 @@ export default function useFixedTitle (props) {
   const scrollY = ref(0)
   // 当前滑动到的区间
   const currentIndex = ref(0)
+  const nextIndexDistance = ref(0)
+  // const colors = ref(['#ffcd32'])
 
   // 当前应固定的索引
   const currentTitle = computed(() => {
@@ -21,11 +25,23 @@ export default function useFixedTitle (props) {
     return currentGroup ? currentGroup.title : ''
   })
 
+  // 固定栏切换
+  const currentStyle = computed(() => {
+    const nextIndexDistanceVal = nextIndexDistance.value
+    const diff = (nextIndexDistanceVal > 0 &&
+      nextIndexDistanceVal < TITLE_HEIGHT)
+      ? nextIndexDistanceVal - TITLE_HEIGHT : 0
+    return {
+      transform: `translate3d(0,${diff}px, 0)`
+    }
+  })
+
   // 数据监听器，歌单数据改变时触发
-  watch(() => props.data,
+  const stop = watch(() => props.data,
     async () => {
       await nextTick()
       calculateListHeights()
+      stop()
     })
 
   // 滑动监听器
@@ -37,6 +53,8 @@ export default function useFixedTitle (props) {
       // 滚动到当前组区间
       if (newY >= heightTop && newY <= heightBottom) {
         currentIndex.value = i
+        // 下一固定栏距顶部距离
+        nextIndexDistance.value = heightBottom - newY
       }
     }
   })
@@ -68,6 +86,8 @@ export default function useFixedTitle (props) {
   return {
     groupRef,
     onScroll,
-    currentTitle
+    currentTitle,
+    currentIndex,
+    currentStyle
   }
 }

@@ -24,9 +24,12 @@ export default {
   emits: ['scroll'],
   setup (props, { emit }) {
     const rootRef = ref(null)
-    useScroller(rootRef, props, emit)
+    const scroll = useScroller(rootRef, props, emit)
 
-    return { rootRef }
+    return {
+      rootRef,
+      scroll
+    }
   }
 }
 </script>

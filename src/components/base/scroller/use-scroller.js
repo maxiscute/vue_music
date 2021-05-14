@@ -24,7 +24,6 @@ export default function useScroller (wrapperRef, options, emit) {
   onUnmounted(() => {
     scroller.value.destroy()
   })
-  return {
-    scroller
-  }
+
+  return scroller
 }

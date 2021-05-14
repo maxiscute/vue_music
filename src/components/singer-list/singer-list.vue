@@ -1,7 +1,8 @@
 <template>
   <scroller class="singer-list"
             :probe-type="3"
-            @scroll="onScroll">
+            @scroll="onScroll"
+            ref="scrollRef">
     <ul ref="groupRef">
       <li
         class="list__group"
@@ -24,9 +25,27 @@
       </li>
     </ul>
     <div class="list__fixed">
-      <div class="list__fixed__title" v-show="currentTitle">
+      <div class="list__fixed__title"
+           v-show="currentTitle"
+           :style="currentStyle">
         {{ currentTitle }}
       </div>
+    </div>
+    <div
+      class="list__shortcut"
+      @touchstart.stop.prevent="onShortcutTouchStart"
+      @touchend.stop.prevent
+      @touchmove.stop.prevent
+    >
+      <ul>
+        <li v-for="(item,index) in shortcutList"
+            class="list__shortcut__item"
+            :key="item"
+            :data-index="index"
+            :class="{'current':currentIndex===index}">
+          {{ item }}
+        </li>
+      </ul>
     </div>
   </scroller>
 </template>
@@ -34,6 +53,7 @@
 <script>
 import Scroller from '@/components/base/scroller/scroller'
 import useFixedTitle from '@/components/singer-list/use-fixed-title'
+import useShortcut from '@/components/singer-list/use-shortcut'
 
 export default {
   name: 'singer-list',
@@ -50,19 +70,38 @@ export default {
     const {
       groupRef,
       onScroll,
-      currentTitle
+      currentTitle,
+      currentIndex,
+      currentStyle
     } = useFixedTitle(props)
+
+    const {
+      shortcutList,
+      scrollRef,
+      onShortcutTouchStart,
+      onShortcutTouchMove,
+      onShortcutTouchEnd
+    } = useShortcut(props, groupRef)
 
     return {
       groupRef,
+      scrollRef,
+      currentTitle,
+      currentIndex,
+      currentStyle,
+      shortcutList,
       onScroll,
-      currentTitle
+      onShortcutTouchStart,
+      onShortcutTouchMove,
+      onShortcutTouchEnd
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+$shortcutColor: var(--shortcutColor, #ffcd32);
+
 .singer-list {
   position: relative;
   width: 100%;
@@ -112,6 +151,30 @@ export default {
       padding-left: 20px;
       font-size: $font-size-small;
       background: $color-highlight-background;
+    }
+  }
+
+  .list__shortcut {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    padding: 20px 0;
+    border-radius: 10px;
+    text-align: center;
+    background: $color-background-d;
+    font-family: Helvetica;
+
+    &__item {
+      padding: 3px;
+      line-height: 1;
+      color: $color-text-l;
+      font-size: $font-size-small;
+
+      &.current {
+        color: $shortcutColor;
+      }
     }
   }
 }
