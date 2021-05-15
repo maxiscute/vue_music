@@ -1,6 +1,11 @@
 <template>
   <div class="singer" v-loading="!singers.length">
-    <singer-list :data="singers" v-show="singers.length"/>
+    <singer-list
+      :data="singers"
+      v-show="singers.length"
+      @clickSinger="handleSingerClick"
+    />
+    <router-view :singer="clickedSinger"></router-view>
   </div>
 </template>
 
@@ -21,7 +26,18 @@ export default {
     })
 
     return {
-      singers
+      singers,
+      clickedSinger: null
+    }
+  },
+  methods: {
+    handleSingerClick (singer) {
+      console.log('handleSingerClick')
+      console.log(singer)
+      this.clickedSinger = singer
+      this.$router.push({
+        path: `/singer/${singer.mid}`
+      })
     }
   },
   components: {
@@ -31,10 +47,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .singer {
-    position: fixed;
-    width: 100%;
-    top: 88px;
-    bottom: 0;
-  }
+.singer {
+  position: fixed;
+  width: 100%;
+  top: 88px;
+  bottom: 0;
+}
 </style>
