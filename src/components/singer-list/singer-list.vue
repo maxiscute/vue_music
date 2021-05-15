@@ -34,9 +34,15 @@
     <div
       class="list__shortcut"
       @touchstart.stop.prevent="onShortcutTouchStart"
-      @touchend.stop.prevent
-      @touchmove.stop.prevent
+      @touchmove.stop.prevent="onShortcutTouchMove"
+      @touchend.stop.prevent="onShortcutTouchEnd"
     >
+      <div
+        class="list__shortcut__hint"
+        v-show="isTouch"
+      >
+        {{ currentTitle }}
+      </div>
       <ul>
         <li v-for="(item,index) in shortcutList"
             class="list__shortcut__item"
@@ -78,6 +84,7 @@ export default {
     const {
       shortcutList,
       scrollRef,
+      isTouch,
       onShortcutTouchStart,
       onShortcutTouchMove,
       onShortcutTouchEnd
@@ -90,6 +97,7 @@ export default {
       currentIndex,
       currentStyle,
       shortcutList,
+      isTouch,
       onScroll,
       onShortcutTouchStart,
       onShortcutTouchMove,
@@ -175,6 +183,22 @@ $shortcutColor: var(--shortcutColor, #ffcd32);
       &.current {
         color: $shortcutColor;
       }
+    }
+
+    &__hint{
+      position: absolute;
+      top: 50%;
+      right: 200%;
+      transform: translateY(-50%);
+      display: block;
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      line-height: 40px;
+      font-size: 20px;
+      background: $color-background-d;
+      border-radius: 50% 50%;
+      color: $shortcutColor;
     }
   }
 }
