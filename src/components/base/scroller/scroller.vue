@@ -14,13 +14,22 @@ export default {
     click: {
       type: Boolean,
       default: true
+    },
+    // 滚动属性
+    probeType: {
+      type: Number,
+      default: 0
     }
   },
-  setup (props) {
+  emits: ['scroll'],
+  setup (props, { emit }) {
     const rootRef = ref(null)
-    useScroller(rootRef, props)
+    const scroll = useScroller(rootRef, props, emit)
 
-    return { rootRef }
+    return {
+      rootRef,
+      scroll
+    }
   }
 }
 </script>
