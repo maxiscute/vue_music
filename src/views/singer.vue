@@ -5,10 +5,15 @@
       v-show="singers.length"
       @clickSinger="handleSingerClick"
     />
-    <router-view
-      :singer="clickedSinger"
-      :mid="clickedSingerMid"
-    ></router-view>
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component
+          :is="Component"
+          :singer="clickedSinger"
+          :mid="clickedSingerMid"
+        />
+      </transition>
+    </router-view>
   </div>
 </template>
 
