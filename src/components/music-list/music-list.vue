@@ -16,6 +16,7 @@
     <scroller
       class="list"
       v-loading="loading"
+      v-no-result:[noResultText]="noResult"
       :style="scrollerStyle"
       :probe-type="3"
       @scroll="onScroll"
@@ -66,7 +67,11 @@ export default {
     },
     title: String,
     pic: String,
-    loading: Boolean
+    loading: Boolean,
+    noResultText: {
+      type: String,
+      default: '抱歉，没有可播放的歌曲'
+    }
   },
   methods: {
     goBack () {
@@ -78,6 +83,9 @@ export default {
     }
   },
   computed: {
+    noResult () {
+      return !this.loading && !this.songs.length
+    },
     bgImageStyle () {
       const scrollY = this.scrollY
       let zIndex = 0
