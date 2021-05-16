@@ -5,20 +5,25 @@ import { onMounted, onUnmounted, ref } from 'vue'
 
 BScroll.use(ObserveDOM)
 
-export default function useScroller (wrapperRef, options) {
+export default function useScroller (wrapperRef, options, emit) {
   const scroller = ref(null)
 
   onMounted(() => {
-    scroller.value = new BScroll(wrapperRef.value, {
+    const scrollerVal = scroller.value = new BScroll(wrapperRef.value, {
       observeDOM: true,
       ...options
     })
+
+    if (options.probeType > 0) {
+      scrollerVal.on('scroll', (pos) => {
+        emit('scroll', pos)
+      })
+    }
   })
 
   onUnmounted(() => {
     scroller.value.destroy()
   })
-  return {
-    scroller
-  }
+
+  return scroller
 }
