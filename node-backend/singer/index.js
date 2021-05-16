@@ -7,6 +7,8 @@ const { get } = require('../request')
 const { getRandomVal } = require('../utils')
 
 const pinyin = require('pinyin')
+// 歌曲图片加载失败时使用的默认图片
+const fallbackPicUrl = 'https://y.gtimg.cn/mediastyle/music_v11/extra/default_300x300.jpg?max_age=31536000'
 
 // 响应成功code
 const CODE_OK = 0
@@ -217,7 +219,8 @@ function handleSongList (list) {
       singer: mergeSinger(info.singer),
       url: '', // 在另一个接口获取
       duration: info.interval,
-      pic: info.album.mid ? `https://y.gtimg.cn/music/photo_new/T002R800x800M000${info.album.mid}.jpg?max_age=2592000` : fallbackPicUrl,
+      pic: info.album.mid ? `https://y.gtimg.cn/music/photo_new/T002R800x800M000${info.album.mid}.jpg?max_age=2592000`
+        : fallbackPicUrl,
       album: info.album.name
     }
 
@@ -258,7 +261,7 @@ class Singer {
     this.id = singer.singer_id
     this.mid = singer.singer_mid
     this.name = singer.singer_name
-    this.pic = singer.singer_pic
+    this.pic = singer.singer_pic.replace(/\.webp$/, '.jpg').replace('150x150', '800x800')
   }
 }
 

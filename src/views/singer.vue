@@ -5,13 +5,18 @@
       v-show="singers.length"
       @clickSinger="handleSingerClick"
     />
-    <router-view :singer="clickedSinger"></router-view>
+    <router-view
+      :singer="clickedSinger"
+      :mid="clickedSingerMid"
+    ></router-view>
   </div>
 </template>
 
 <script>
 import { getSingerList } from '@/service/singer'
 import { ref, onBeforeMount } from 'vue'
+import storage from 'good-storage'
+import { SINGER_KEY } from '@/assets/js/constant'
 import SingerList from '@/components/singer-list/singer-list'
 
 export default {
@@ -27,7 +32,8 @@ export default {
 
     return {
       singers,
-      clickedSinger: null
+      clickedSinger: null,
+      clickedSingerMid: null
     }
   },
   methods: {
@@ -35,9 +41,14 @@ export default {
       console.log('handleSingerClick')
       console.log(singer)
       this.clickedSinger = singer
+      this.clickedSingerMid = singer.mid
+      this.cacheSinger(singer)
       this.$router.push({
-        path: `/singer/${singer.mid}`
+        path: `/singer/${singer.name.replace(/ /g, '_')}`
       })
+    },
+    cacheSinger (singer) {
+      storage.session.set(SINGER_KEY, singer)
     }
   },
   components: {
