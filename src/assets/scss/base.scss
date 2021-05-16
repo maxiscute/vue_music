@@ -12,7 +12,7 @@ body, html {
 }
 
 .slide-enter-active, .slide-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.3s
 }
 
 .slide-enter-from, .slide-leave-to {
@@ -20,7 +20,7 @@ body, html {
 }
 
 .list-enter-active, .list-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.3s;
 }
 
 .list-enter-from, .list-leave-to {
