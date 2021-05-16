@@ -17,6 +17,7 @@
             v-for="item in group.list"
             :key="item.id"
             class="list__group__item"
+            @click="onItemClick(item)"
           >
             <img class="avatar" :src="item.pic" alt="">
             <span class="name">{{ item.name }}</span>
@@ -66,6 +67,7 @@ export default {
   components: {
     Scroller
   },
+  emits: ['clickSinger'],
   props: {
     data: {
       type: Array,
@@ -90,6 +92,12 @@ export default {
       onShortcutTouchEnd
     } = useShortcut(props, groupRef)
 
+    const onItemClick = (item) => {
+      console.log('onItemClick')
+      console.log(item)
+      emit('clickSinger', item)
+    }
+
     return {
       groupRef,
       scrollRef,
@@ -101,7 +109,8 @@ export default {
       onScroll,
       onShortcutTouchStart,
       onShortcutTouchMove,
-      onShortcutTouchEnd
+      onShortcutTouchEnd,
+      onItemClick
     }
   }
 }
@@ -185,7 +194,7 @@ $shortcutColor: var(--shortcutColor, #ffcd32);
       }
     }
 
-    &__hint{
+    &__hint {
       position: absolute;
       top: 50%;
       right: 200%;
