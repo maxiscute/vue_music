@@ -18,12 +18,19 @@
       <div
         class="play-btn-wrapper"
         :style="buttonStyle"
+        v-show="!noResult"
       >
-        <div class="btn play-btn">
+        <div
+          class="btn play-btn"
+          @click="onPlayAllClick"
+        >
           <i class="icon-play"></i>
           <span class="text">播放</span>
         </div>
-        <div class="btn shuffle-play-btn">
+        <div
+          class="btn shuffle-play-btn"
+          @click="onShufflePlayClick"
+        >
           <i class="icon-shuffle-play"></i>
           <span class="text">随机</span>
         </div>
@@ -41,7 +48,7 @@
       <div class="song-list-wrapper">
         <song-list
           :songs="songs"
-          @songItemClicked="playItem"
+          @songItemClicked="onPlayItemClick"
         ></song-list>
       </div>
     </scroller>
@@ -76,9 +83,13 @@ export default {
     // this.imageHeight = this.$refs.bgImage.clientHeight
     this.imageHeight = this.$refs.testDiv.clientHeight
     this.maxScrollY = this.imageHeight - RESERVE_HEIGHT
-    // console.log('music-list mounted, imageHeight',
+    console.log('music-list mounted')
     //   this.imageHeight)
     // console.log(this.$refs.bgImage)
+    console.log(this.loading)
+    console.log(this.noResult)
+    console.log(this.songs)
+    console.log(this.songs.length)
   },
   props: {
     songs: {
@@ -94,7 +105,7 @@ export default {
     }
   },
   methods: {
-    playItem ({
+    onPlayItemClick ({
       song,
       index
     }) {
@@ -110,12 +121,25 @@ export default {
     onScroll (pos) {
       this.scrollY = -pos.y
     },
+    onPlayAllClick () {
+      this.selectPlay({
+        list: this.songs,
+        index: 0
+      })
+    },
+    onShufflePlayClick () {
+      // console.log('shufflePlay')
+      // console.log(this.songs)
+      this.shufflePlay(this.songs)
+    },
     ...mapActions([
-      'selectPlay'
+      'selectPlay',
+      'shufflePlay'
     ])
   },
   computed: {
     noResult () {
+      // console.log('noResult', !this.loading && !this.songs.length)
       return !this.loading && !this.songs.length
     },
     buttonStyle () {

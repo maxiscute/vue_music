@@ -1,5 +1,5 @@
 import { PLAY_MODE } from '@/assets/js/constant'
-import { shufflePlayList } from '@/assets/js/util'
+import { shuffleArray } from '@/assets/js/util'
 
 // 选择播放
 export function selectPlay ({
@@ -24,6 +24,6 @@ export function shufflePlay ({
   commit('setSequenceList', list)
   commit('setPlayerState', true)
   commit('setIsPlayerFullScreen', true)
-  commit('setPlayList', shufflePlayList(list))
+  commit('setPlayList', shuffleArray(list))
   commit('setCurrentPlayIndex', 0)
 }

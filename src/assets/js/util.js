@@ -1,7 +1,9 @@
 // 工具函数
 
 // 随机播放列表
-export function shufflePlayList (source) {
+export function shuffleArray (source) {
+  console.log('shuffleArray')
+  console.log('source', source)
   const arr = source.slice()
   for (let i = 0; i < arr.length; i++) {
     const j = getRandomInt(i)
