@@ -5,12 +5,29 @@
          @click="goBack"></i>
     </div>
     <h1 class="title">{{ title }}</h1>
-    <div class="bg-img"
-         :style="bgImageStyle"
-         ref="bgImage"
+    <div
+      ref="testDiv"
     >
-      <div class="filter"
-           :style="filterStyle"></div>
+      <div class="bg-img"
+           :style="bgImageStyle"
+           ref="bgImage"
+      >
+        <div class="filter"
+             :style="filterStyle"></div>
+      </div>
+      <div
+        class="play-btn-wrapper"
+        :style="buttonStyle"
+      >
+        <div class="btn play-btn">
+          <i class="icon-play"></i>
+          <span class="text">播放</span>
+        </div>
+        <div class="btn shuffle-play-btn">
+          <i class="icon-shuffle-play"></i>
+          <span class="text">随机</span>
+        </div>
+      </div>
     </div>
 
     <scroller
@@ -24,6 +41,7 @@
       <div class="song-list-wrapper">
         <song-list
           :songs="songs"
+          @songItemClicked="playItem"
         ></song-list>
       </div>
     </scroller>
@@ -33,6 +51,7 @@
 <script>
 import Scroller from '@/components/base/scroller/scroller'
 import SongList from '@/components/base/song-list/song-list'
+import { mapActions } from 'vuex'
 
 // 图片保留高度
 const RESERVE_HEIGHT = 40
@@ -54,7 +73,8 @@ export default {
     }
   },
   mounted () {
-    this.imageHeight = this.$refs.bgImage.clientHeight
+    // this.imageHeight = this.$refs.bgImage.clientHeight
+    this.imageHeight = this.$refs.testDiv.clientHeight
     this.maxScrollY = this.imageHeight - RESERVE_HEIGHT
     // console.log('music-list mounted, imageHeight',
     //   this.imageHeight)
@@ -74,17 +94,42 @@ export default {
     }
   },
   methods: {
+    playItem ({
+      song,
+      index
+    }) {
+      this.selectPlay({
+        list: this.songs,
+        index
+      })
+    },
     goBack () {
       this.$router.back()
     },
     // 实时监听滚动组件位置，
     onScroll (pos) {
       this.scrollY = -pos.y
-    }
+    },
+    ...mapActions([
+      'selectPlay'
+    ])
   },
   computed: {
     noResult () {
       return !this.loading && !this.songs.length
+    },
+    buttonStyle () {
+      const scrollY = this.scrollY
+      let translateY = 0
+
+      // 下拉优化
+      if (scrollY < 0) {
+        translateY = -scrollY
+      }
+
+      return {
+        transform: `translateY(${translateY}px)`
+      }
     },
     bgImageStyle () {
       const scrollY = this.scrollY
@@ -185,6 +230,34 @@ export default {
       width: 100%;
       height: 100%;
       background: rgba(7, 17, 27, 0.4);
+    }
+  }
+
+  .play-btn-wrapper {
+    top: 0;
+    z-index: 10;
+    width: 100%;
+    padding: 0 20px;
+    margin: 8px 0;
+
+    .btn {
+      box-sizing: border-box;
+      width: 125px;
+      text-align: center;
+      border: 2px solid $color-theme;
+      color: $color-theme;
+      border-radius: 8px;
+      line-height: 36px;
+      height: 40px;
+      display: inline-block;
+      font-size: 0;
+      margin: 0 20px;
+    }
+
+    .text {
+      display: inline-block;
+      vertical-align: middle;
+      font-size: 20px;
     }
   }
 
