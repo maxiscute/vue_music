@@ -2,8 +2,10 @@
   <ul class="song-list">
     <li
       class="song-list__item"
-      v-for="song in songs"
-      :key="song.id">
+      v-for="(song,index) in songs"
+      :key="song.id"
+      @click="clickSongItem(song, index)"
+    >
       <div class="song-list__item__content">
         <h2 class="name">{{ song.name }}</h2>
         <p class="desc">{{ getSongDesc(song) }}</p>
@@ -21,7 +23,14 @@ export default {
       default: () => []
     }
   },
+  emits: ['songItemClicked'],
   methods: {
+    clickSongItem (song, index) {
+      this.$emit('songItemClicked', {
+        song,
+        index
+      })
+    },
     getSongDesc (song) {
       return `${song.singer}·${song.album}`
     }
@@ -37,6 +46,7 @@ export default {
     box-sizing: border-box;
     height: 64px;
     font-size: $font-size-medium;
+
     .song-list__item__content {
       flex: 1;
       line-height: 20px;
