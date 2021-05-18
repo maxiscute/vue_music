@@ -21,18 +21,18 @@
           <div class="icon i-left">
             <i class="icon-sequence"></i>
           </div>
-          <div class="icon i-left">
+          <div class="icon i-left" :class="disableClass">
             <i class="icon-prev"
                @click="onPrevIconClick"
             ></i>
           </div>
-          <div class="icon i-center">
+          <div class="icon i-center" :class="disableClass">
             <i
               @click="onPlayIconClick"
               :class="playIconStyle"
             ></i>
           </div>
-          <div class="icon i-right">
+          <div class="icon i-right" :class="disableClass">
             <i class="icon-next"
                @click="onNextIconClick"
             ></i>
@@ -46,6 +46,8 @@
       <audio
         ref="audioRef"
         @pause="onAudioPause"
+        @canplay="onAudioCanPlay"
+        @error="onAudioError"
       ></audio>
     </div>
   </div>
@@ -60,6 +62,8 @@ export default {
   setup () {
     const store = useStore()
     const audioRef = ref(null)
+    // 缓冲能否播放
+    const songReady = ref(false)
     // 使数据为响应式的
     const isPlayerFullScreen = computed(() => store.state.isPlayerFullScreen)
     const currentPlaySong = computed(() => store.getters.currentPlaySong)
@@ -72,20 +76,30 @@ export default {
       return isPlaying.value ? 'icon-pause' : 'icon-play'
     })
 
+    const disableClass = computed(() => {
+      // 当不能播放（缓冲）时，禁止点击
+      return songReady.value ? '' : 'disable'
+    })
+
     // 监听是否新歌
     watch(currentPlaySong, (newSong) => {
       // 新歌无链接，不合法
       if (!newSong.id || !newSong.url) {
         return
       }
+      // 新歌，需要重新缓冲
+      songReady.value = false
       const audioElement = audioRef.value
       audioElement.src = newSong.url
-      // console.log(audioElement)
-      // console.log(audioElement.src)
       audioElement.play()
     })
 
+    // 监听正在播放
     watch(isPlaying, (newIsPlaying) => {
+      // 歌曲未缓冲好
+      if (!songReady.value) {
+        return
+      }
       const audioElement = audioRef.value
       newIsPlaying ? audioElement.play() : audioElement.pause()
     })
@@ -104,14 +118,17 @@ export default {
 
     // 播放按钮点击
     const onPlayIconClick = () => {
+      if (!songReady.value) {
+        return
+      }
       store.commit('setPlayerState', !isPlaying.value)
     }
 
     // 上一首按钮点击
     const onPrevIconClick = () => {
       const list = playlist.value
-      // 播放列表长度为0，则禁止
-      if (!list.length) {
+      // 未缓冲好或播放列表长度为0，则禁止
+      if (!songReady.value || !list.length) {
         return
       }
 
@@ -134,8 +151,8 @@ export default {
     // 下一首按钮点击
     const onNextIconClick = () => {
       const list = playlist.value
-      // 播放列表长度为0，则禁止
-      if (!list.length) {
+      // 未缓冲、播放列表长度为0，则禁止
+      if (!songReady.value || !list.length) {
         return
       }
 
@@ -160,16 +177,32 @@ export default {
       store.commit('setPlayerState', false)
     }
 
+    // 播放异常,可以切歌
+    const onAudioError = () => {
+      songReady.value = true
+    }
+
+    // 歌曲缓冲
+    const onAudioCanPlay = () => {
+      if (songReady.value) {
+        return
+      }
+      songReady.value = true
+    }
+
     return {
       currentPlaySong,
       isPlayerFullScreen,
       audioRef,
       playIconStyle,
+      disableClass,
       onBackClick,
       onPlayIconClick,
       onPrevIconClick,
       onNextIconClick,
-      onAudioPause
+      onAudioPause,
+      onAudioError,
+      onAudioCanPlay
     }
   }
 }
