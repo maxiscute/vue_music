@@ -17,9 +17,34 @@
       <h1 class="song-title">{{ currentPlaySong.name }}</h1>
       <h2 class="singer-name">{{ currentPlaySong.singer }}</h2>
       <div class="bottom">
+        <div class="progress-wrapper">
+          <div class="progress-bar-wrapper">
+            <progress-bar
+              :progress="progress"
+              @progress-changing="onProgressChanging"
+              @progress-changed="onProgressChanged"
+            ></progress-bar>
+          </div>
+          <div class="time-wrapper">
+            <span
+              class="time time-played"
+              :class="{'time-covered':isProgressChangeCoverPlayTime}"
+            >
+              {{
+                formatTime(currentTime)
+              }}</span>
+            <span
+              class="time time-left"
+              :class="{'time-covered':isProgressChangeCoverLeftTime}"
+            >
+              -{{
+                formatTime(currentPlaySong.duration - currentTime)
+              }}</span>
+          </div>
+        </div>
         <div class="operators">
           <div class="icon i-left">
-            <i class="icon-sequence"></i>
+            <i @click="changeMode" :class="modeIcon"></i>
           </div>
           <div class="icon i-left" :class="disableClass">
             <i class="icon-prev"
@@ -38,7 +63,8 @@
             ></i>
           </div>
           <div class="icon i-right">
-            <i class="icon-not-favorite"></i>
+            <i :class="getFavoriteIcon(currentPlaySong)"
+               @click=onFavoriteIconClick(currentPlaySong)></i>
           </div>
         </div>
       </div>
@@ -47,6 +73,7 @@
         ref="audioRef"
         @pause="onAudioPause"
         @canplay="onAudioCanPlay"
+        @timeupdate="onTimeUpdate"
         @error="onAudioError"
       ></audio>
     </div>
@@ -56,14 +83,27 @@
 <script>
 import { useStore } from 'vuex'
 import { ref, computed, watch } from 'vue'
+import useMode from '@/components/player/use-mode'
+import useFavorite from '@/components/player/use-favorite'
+import ProgressBar from '@/components/player/progress-bar'
+import { formatTime } from '@/assets/js/util'
 
 export default {
   name: 'player',
+  components: {
+    ProgressBar
+  },
+  // 主播放功能逻辑
   setup () {
     const store = useStore()
     const audioRef = ref(null)
+    // 当前播放时间
+    const currentTime = ref(0)
     // 缓冲能否播放
     const songReady = ref(false)
+    let progressChanging = false
+    const isProgressChangeCoverPlayTime = ref(false)
+    const isProgressChangeCoverLeftTime = ref(false)
     // 使数据为响应式的
     const isPlayerFullScreen = computed(() => store.state.isPlayerFullScreen)
     const currentPlaySong = computed(() => store.getters.currentPlaySong)
@@ -71,6 +111,18 @@ export default {
     const isPlaying = computed(() => store.state.playerState)
     const currentPlayIndex = computed(() => store.state.currentPlayIndex)
     const playlist = computed(() => store.state.playlist)
+    const progress = computed(() => {
+      return currentTime.value / currentPlaySong.value.duration
+    })
+
+    const {
+      modeIcon,
+      changeMode
+    } = useMode()
+    const {
+      onFavoriteIconClick,
+      getFavoriteIcon
+    } = useFavorite()
 
     const playIconStyle = computed(() => {
       return isPlaying.value ? 'icon-pause' : 'icon-play'
@@ -87,6 +139,7 @@ export default {
       if (!newSong.id || !newSong.url) {
         return
       }
+      currentTime.value = 0
       // 新歌，需要重新缓冲
       songReady.value = false
       const audioElement = audioRef.value
@@ -190,19 +243,68 @@ export default {
       songReady.value = true
     }
 
+    const onTimeUpdate = (e) => {
+      if (!progressChanging) {
+        currentTime.value = e.target.currentTime
+      }
+    }
+
+    // 进度条被拖动
+    const onProgressChanging = (progress) => {
+      progressChanging = true
+      currentTime.value = currentPlaySong.value.duration * progress
+
+      // 拖拽遮挡播放时间
+      if (progress < 0.135) {
+        isProgressChangeCoverPlayTime.value = true
+      } else if (progress > 0.865) {
+        isProgressChangeCoverLeftTime.value = true
+      } else {
+        isProgressChangeCoverPlayTime.value = false
+        isProgressChangeCoverLeftTime.value = false
+      }
+    }
+
+    // 进度条拖动松开
+    const onProgressChanged = (progress) => {
+      progressChanging = false
+      audioRef.value.currentTime = currentTime.value =
+        currentPlaySong.value.duration * progress
+      isProgressChangeCoverPlayTime.value = false
+      isProgressChangeCoverLeftTime.value = false
+      if (!isPlaying.value) {
+        store.commit('setPlayerState', true)
+      }
+    }
+
     return {
       currentPlaySong,
       isPlayerFullScreen,
       audioRef,
       playIconStyle,
       disableClass,
+      progress,
+      currentTime,
+      isProgressChangeCoverPlayTime,
+      isProgressChangeCoverLeftTime,
       onBackClick,
       onPlayIconClick,
       onPrevIconClick,
       onNextIconClick,
       onAudioPause,
       onAudioError,
-      onAudioCanPlay
+      onAudioCanPlay,
+      onTimeUpdate,
+      onProgressChanged,
+      onProgressChanging,
+      // 来自use-mode
+      modeIcon,
+      changeMode,
+      // use-favorite
+      onFavoriteIconClick,
+      getFavoriteIcon,
+      // util
+      formatTime
     }
   }
 }
@@ -338,6 +440,68 @@ export default {
 
         .icon-favorite {
           color: $color-sub-theme;
+        }
+      }
+
+      .progress-wrapper {
+        display: flex;
+        align-items: center;
+        width: 80%;
+        margin: 0px auto;
+        padding: 10px 0;
+        height: fit-content;
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: space-between;
+
+        .time {
+          color: #8d8d8d;
+          font-size: 80%;
+          flex: 0 0 45px;
+          line-height: 30px;
+          width: 40px;
+
+          &.time-played {
+            text-align: left;
+            float: left;
+            position: relative;
+            top: 0px;
+            -webkit-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -moz-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            //margin-top: -22px;
+          }
+
+          &.time-left {
+            text-align: right;
+            float: right;
+            width: fit-content;
+            position: relative;
+            top: 0px;
+            -webkit-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -moz-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            //margin-top: -22px;
+          }
+        }
+
+        .time-wrapper {
+          width: 100%;
+          margin-top: -60px;
+          display: inline-block;
+        }
+
+        .time-covered {
+          top: 13px !important;
+        }
+
+        .progress-bar-wrapper {
+          flex: 1;
+          width: 100%;
+          z-index: 20;
+          min-width: 100%;
+          max-width: 100%;
+          padding-bottom: 30px;
         }
       }
     }

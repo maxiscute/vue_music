@@ -27,3 +27,26 @@ export function shufflePlay ({
   commit('setPlayList', shuffleArray(list))
   commit('setCurrentPlayIndex', 0)
 }
+
+// 模式切换
+export function changeMode ({
+  commit,
+  state,
+  getters
+}, mode) {
+  const currentID = getters.currentPlaySong.id
+
+  // 随机模式
+  if (mode === PLAY_MODE.shuffle) {
+    commit('setPlayList', shuffleArray(state.sequenceList))
+  } else {
+    commit('setPlayList', state.sequenceList)
+  }
+
+  const index = state.playlist.findIndex((song) => {
+    return song.id === currentID
+  })
+
+  commit('setCurrentPlayIndex', index)
+  commit('setPlayMode', mode)
+}
