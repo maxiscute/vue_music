@@ -5,7 +5,8 @@ const {
 } = require('./singer')
 
 const {
-  registerSongsUrl
+  registerSongsUrl,
+  registerLyric
 } = require('./song')
 
 // 注册后端路由
@@ -16,6 +17,7 @@ function registerRouter (app) {
   registerSingerDetail(app)
 
   registerSongsUrl(app)
+  registerLyric(app)
 }
 
 module.exports = registerRouter

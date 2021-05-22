@@ -15,6 +15,8 @@
     "core-js": "^3.6.5",
     "fibers": "^5.0.0",
     "good-storage": "^1.1.1",
+    "js-base64": "^3.6.0",
+    "lyric-parser": "^1.0.1",
     "postcss": "^8.2.15",
     "sass": "^1.32.12",
     "style-loader": "^2.0.0",
