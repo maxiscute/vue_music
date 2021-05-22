@@ -1,12 +1,12 @@
 <template>
   <div class="player">
-    <div
-      class="full-screen-player"
-      v-show="isPlayerFullScreen"
+    <div class="full-screen-player"
+         v-show="isPlayerFullScreen"
     >
       <div class="background">
         <img :src="currentPlaySong.pic" alt="">
       </div>
+
       <div class="top">
         <div class="back"
              @click="onBackClick"
@@ -14,59 +14,68 @@
           <i class="icon-back"></i>
         </div>
       </div>
-      <div class="middle">
-        <div class="middle-l"
-             v-show="!isShowLyric">
+
+      <div class="cover"
+           :style="coverStyle">
+        <div class="cover-content">
           <div class="album-wrapper">
             <div class="album">
-              <img
-                :src="currentPlaySong.pic" alt="songPic"
-                :class="{playing:isPlaying}"
-                @click="onSongPicClick"
-                class="img">
+              <transition id="trans-cover" name="trans-cover">
+                <img
+                  :src="currentPlaySong.pic" alt="songPic"
+                  :class="{playing:isPlaying}"
+                  @click="onSongPicClick"
+                  v-show="!isShowLyric"
+                  key="songPic"
+                  class="img">
+              </transition>
             </div>
           </div>
         </div>
       </div>
-      <div class="lyric"
-           :style="lyricStyle"
-           v-show="isShowLyric"
-      >
-        <scroller
-          class="middle-r"
-          ref="lyricScrollerRef"
-          :probe-type="1"
-          :momentum-limit-time="300"
-          :scrollX="false"
-          @scroll="onLyricScroll"
+      <transition name="trans-lyric">
+        <div class="lyric"
+             :style="lyricStyle"
+             v-show="isShowLyric"
         >
-          <div class="frame-lyrics">
-            <div
-              style="white-space:pre-wrap;"
-              v-if="currentLyric" ref="lyricListRef">
+          <scroller
+            class="lyric-scroller"
+            ref="lyricScrollerRef"
+            :probe-type="1"
+            :momentum-limit-time="300"
+            :scrollX="false"
+            @scroll="onLyricScroll"
+          >
+            <div class="frame-lyrics">
               <div
-                class="text"
-                v-for="(line, index) in currentLyric.lines"
-                :class="{'current':currentLineNum===index}"
-                :key="line.num"
-              >
-                {{ line.txt }}
+                style="white-space:pre-wrap;"
+                v-if="currentLyric" ref="lyricListRef">
+                <div
+                  class="text"
+                  v-for="(line, index) in currentLyric.lines"
+                  :class="{'current':currentLineNum===index}"
+                  :key="line.num"
+                >
+                  {{ line.txt }}
+                </div>
               </div>
             </div>
-          </div>
-        </scroller>
-      </div>
-      <div class="info">
-        <div
-          class="cover-info"
-          v-show="!isShowLyric"
-        >
-          <div class="song-title">{{ currentPlaySong.name }}</div>
-          <div class="singer-name">{{ currentPlaySong.singer }}</div>
+          </scroller>
         </div>
-        <div
-          class="test-info"
-          v-show="isShowLyric"
+      </transition>
+
+      <div class="info">
+        <transition name="trans-cover-info">
+          <div class="cover-info"
+               v-show="!isShowLyric"
+          >
+            <div class="song-title">{{ currentPlaySong.name }}</div>
+            <div class="singer-name">{{ currentPlaySong.singer }}</div>
+          </div>
+        </transition>
+
+        <div class="lyric-info"
+             v-show="isShowLyric"
         >
           <div class="image">
             <img
@@ -75,24 +84,29 @@
               alt="songPic"
             >
           </div>
-          <div>
-            <div class="song-title">{{ currentPlaySong.name }}</div>
-            <div class="singer-name">{{ currentPlaySong.singer }}</div>
-          </div>
+          <transition name="trans-lyric-info-song">
+            <div class="song-info"
+                 v-show="isShowLyric">
+              <div class="song-title">{{ currentPlaySong.name }}</div>
+              <div class="singer-name">{{ currentPlaySong.singer }}</div>
+            </div>
+          </transition>
         </div>
       </div>
-      <div class="bottom"
-           :style="bottomStyle"
-      >
-        <div class="progress-wrapper">
-          <div class="progress-bar-wrapper">
-            <progress-bar
-              :progress="progress"
-              @progress-changing="onProgressChanging"
-              @progress-changed="onProgressChanged"
-            ></progress-bar>
-          </div>
-          <div class="time-wrapper">
+
+      <transition name="trans-bottom">
+        <div class="bottom"
+             v-show="bottomStyle"
+        >
+          <div class="progress-wrapper">
+            <div class="progress-bar-wrapper">
+              <progress-bar
+                :progress="progress"
+                @progress-changing="onProgressChanging"
+                @progress-changed="onProgressChanged"
+              ></progress-bar>
+            </div>
+            <div class="time-wrapper">
             <span
               class="time time-played"
               :class="{'time-covered':isProgressChangeCoverPlayTime}"
@@ -100,41 +114,42 @@
               {{
                 formatTime(currentTime)
               }}</span>
-            <span
-              class="time time-left"
-              :class="{'time-covered':isProgressChangeCoverLeftTime}"
-            >
+              <span
+                class="time time-left"
+                :class="{'time-covered':isProgressChangeCoverLeftTime}"
+              >
               -{{
-                formatTime(currentPlaySong.duration - currentTime)
-              }}</span>
+                  formatTime(currentPlaySong.duration - currentTime)
+                }}</span>
+            </div>
+          </div>
+          <div class="operators">
+            <div class="icon i-left">
+              <i @click="changeMode" :class="modeIcon"></i>
+            </div>
+            <div class="icon i-left" :class="disableClass">
+              <i class="icon-prev"
+                 @click="onPrevIconClick"
+              ></i>
+            </div>
+            <div class="icon i-center" :class="disableClass">
+              <i
+                @click="onPlayIconClick"
+                :class="playIconStyle"
+              ></i>
+            </div>
+            <div class="icon i-right" :class="disableClass">
+              <i class="icon-next"
+                 @click="onNextIconClick"
+              ></i>
+            </div>
+            <div class="icon i-right">
+              <i :class="getFavoriteIcon(currentPlaySong)"
+                 @click=onFavoriteIconClick(currentPlaySong)></i>
+            </div>
           </div>
         </div>
-        <div class="operators">
-          <div class="icon i-left">
-            <i @click="changeMode" :class="modeIcon"></i>
-          </div>
-          <div class="icon i-left" :class="disableClass">
-            <i class="icon-prev"
-               @click="onPrevIconClick"
-            ></i>
-          </div>
-          <div class="icon i-center" :class="disableClass">
-            <i
-              @click="onPlayIconClick"
-              :class="playIconStyle"
-            ></i>
-          </div>
-          <div class="icon i-right" :class="disableClass">
-            <i class="icon-next"
-               @click="onNextIconClick"
-            ></i>
-          </div>
-          <div class="icon i-right">
-            <i :class="getFavoriteIcon(currentPlaySong)"
-               @click=onFavoriteIconClick(currentPlaySong)></i>
-          </div>
-        </div>
-      </div>
+      </transition>
 
       <audio
         ref="audioRef"
@@ -215,6 +230,14 @@ export default {
       currentTime
     })
 
+    const coverStyle = computed(() => {
+      if (isShowLyric.value) {
+        return 'z-index: 0;'
+      } else {
+        return 'z-index: 25;'
+      }
+    })
+
     const lyricStyle = computed(() => {
       if (isPlaying.value) {
         if (isScrollLyric.value) {
@@ -231,15 +254,15 @@ export default {
       if (isShowLyric.value) {
         if (isPlaying.value) {
           if (isScrollLyric.value) {
-            return ''
+            return true
           } else {
-            return 'visibility: hidden'
+            return false
           }
         } else {
-          return ''
+          return true
         }
       } else {
-        return ''
+        return true
       }
     })
 
@@ -290,7 +313,7 @@ export default {
       timer = setTimeout(() => {
         isScrollLyric.value = false
         styleTimeOut = true
-      }, 13000)
+      }, 12000)
     })
 
     // 单曲循环
@@ -393,9 +416,10 @@ export default {
       }
     }
 
-    // 点击图片实现歌词界面切换
+    // 点击图片实现封面、歌词界面切换
     const onSongPicClick = () => {
       isShowLyric.value = !isShowLyric.value
+      isScrollLyric.value = true
     }
 
     // 歌曲播放完后
@@ -459,6 +483,7 @@ export default {
       isShowLyric,
       lyricStyle,
       bottomStyle,
+      coverStyle,
       onBackClick,
       onPlayIconClick,
       onPrevIconClick,
@@ -540,23 +565,16 @@ export default {
 
     }
 
-    //.album {
-    //  width: 350px;
-    //  border-radius: 5px;
-    //  position: absolute;
-    //  top: 40px;
-    //  left: 6.5%;
-    //  box-shadow: 0px 15px 50px 0px rgba(0,0,0,0.8);
-    //}
-    .middle {
+    .cover {
       position: fixed;
       width: 100%;
       top: 80px;
+      z-index: 0;
       bottom: 170px;
       white-space: nowrap;
       font-size: 0;
 
-      .middle-l {
+      .cover-content {
         display: inline-block;
         vertical-align: top;
         position: relative;
@@ -612,74 +630,6 @@ export default {
           }
         }
       }
-
-      //.middle-r {
-      //  display: inline-block;
-      //  vertical-align: top;
-      //  width: 100%;
-      //  height: 100%;
-      //  overflow: hidden;
-
-      //  .lyric-wrapper {
-      //    width: 80%;
-      //    margin: 0 auto;
-      //    overflow: hidden;
-      //    text-align: center;
-      //
-      //    .text {
-      //      line-height: 32px;
-      //      color: rgba(255, 255, 255, 0.75);
-      //      font-size: $font-size-medium;
-      //      margin-top: 1.4em;
-      //      word-wrap: break-word;
-      //      word-break: break-all;
-      //
-      //
-      //      &.current {
-      //        color: white;
-      //        font-size: 3rem;
-      //        margin-top: 0.8em;
-      //      }
-      //
-      //      &:not(.current) {
-      //        filter: blur(0.05px);
-      //      }
-      //    }
-      //  }
-      //
-      //  .frame-lyrics {
-      //    position: relative;
-      //    z-index: 10;
-      //    flex-grow: 1;
-      //    padding: 0 2rem 2rem;
-      //    overflow-y: auto;
-      //    white-space:pre-wrap;
-      //
-      //    .text {
-      //      color: rgba(255, 255, 255, 0.75);
-      //      font-size: 23px;
-      //
-      //      + div {
-      //        margin-top: 1.4em;
-      //      }
-      //
-      //      &.current {
-      //        color: white;
-      //        font-size: 28px;
-      //        margin-top: 40px;
-      //        font-weight: bold;
-      //
-      //        + div {
-      //          margin-top: 40px;
-      //        }
-      //      }
-      //
-      //      &:not(.current) {
-      //        filter: blur(0.4px);
-      //      }
-      //    }
-      //  }
-      //}
     }
 
     .lyric {
@@ -689,9 +639,9 @@ export default {
       bottom: 170px;
       white-space: nowrap;
       font-size: 0;
-      transition: all 0.3s ease-out;
+      transition: all 0.37s ease-out;
 
-      .middle-r {
+      .lyric-scroller {
         display: inline-block;
         vertical-align: top;
         width: 100%;
@@ -762,31 +712,30 @@ export default {
 
     .info {
       .cover-info {
+        position: absolute;
+        bottom: 175px;
+        display: flex;
+        left: 50%;
+        transform: translate(-50%, 0);
+        flex-direction: column;
+
         .singer-name {
-          position: absolute;
-          font-size: 130%;
-          width: 400px;
+          font-size: 115%;
           text-align: center;
-          left: 50%;
-          @include no-wrap();
-          transform: translate(-50%, 0);
-          top: 470px;
+          font-weight: 500;
+          margin-top: 6px;
+          opacity: 0.88;
           color: #ff4981;
         }
 
         .song-title {
-          position: absolute;
           font-size: 130%;
-          width: 400px;
-          left: 50%;
-          @include no-wrap();
-          transform: translate(-50%, 0);
+          font-weight: 550;
           text-align: center;
-          top: 440px;
         }
       }
 
-      .test-info {
+      .lyric-info {
         position: relative;
         z-index: 10;
         display: flex;
@@ -795,7 +744,7 @@ export default {
         padding: 1rem 2rem;
 
         .image {
-          margin-right: 1.5em;
+          margin-right: 12px;
 
           img {
             width: 50px;
@@ -805,17 +754,23 @@ export default {
 
         }
 
-        .song-title {
-          font-size: 26px;
-          font-weight: 500;
-        }
+        .song-info {
+          position: relative;
+          top: 0;
 
-        .singer-name {
-          font-size: 14px;
-          font-weight: 500;
-          margin-top: 8px;
-        }
+          .song-title {
+            font-size: 26px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+          }
 
+          .singer-name {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.65);
+            font-weight: 500;
+            margin-top: 5px;
+          }
+        }
       }
     }
 
@@ -823,7 +778,6 @@ export default {
       position: absolute;
       bottom: 50px;
       width: 100%;
-      transition: all 0.3s ease-in-out;
 
       .operators {
         display: flex;
@@ -927,7 +881,108 @@ export default {
       }
     }
   }
-
 }
 
+// 封面页专辑图片的动画
+.trans-cover-enter-from,
+.trans-cover-leave-to {
+  opacity: 0.2 !important;
+  left: -6px !important;
+  top: -30px !important;
+  box-shadow: none !important;
+  width: 10px !important;
+  height: 10px !important;
+  z-index: 10;
+}
+
+.trans-cover-enter-to,
+.trans-cover-leave-from {
+  opacity: 1 !important;
+  z-index: 30 !important;
+}
+
+.trans-cover-enter-active,
+.trans-cover-leave-active {
+  transition: all 0.3s cubic-bezier(0.29, 1.02, 0, 1.03) !important;
+}
+
+//歌词页歌曲信息的动画
+.trans-lyric-info-song-enter-from,
+.trans-lyric-info-song-leave-to {
+  top: 70px !important;
+  opacity: 0.1;
+  z-index: 5;
+}
+
+.trans-lyric-info-song-enter-to,
+.trans-lyric-info-song-leave-from {
+  opacity: 1 !important;
+  top: 0px;
+}
+
+.trans-lyric-info-song-enter-active,
+.trans-lyric-info-song-leave-active {
+  transition: all 0.2s ease-out !important;
+}
+
+//歌词动画
+.trans-lyric-enter-from,
+.trans-lyric-leave-to {
+  bottom: 170px !important;
+  top: 210px !important;
+  opacity: 0.1 !important;
+  filter: blur(2px) !important;
+  z-index: 5 !important;
+}
+
+.trans-lyric-enter-to,
+.trans-lyric-leave-from {
+  opacity: 0.3 !important;
+}
+
+.trans-lyric-enter-active,
+.trans-lyric-leave-active {
+  transition: bottom 0.1s ease-in, top 0.1s ease-in,
+  opacity 0.2s ease-in, filter 0.2s ease-in !important;
+}
+
+//封面页歌曲信息动画
+.trans-cover-info-enter-from,
+.trans-cover-info-leave-to {
+  bottom: 400px !important;
+  opacity: 0.2 !important;
+  filter: blur(2px) !important;
+}
+
+.trans-cover-info-enter-to,
+.trans-cover-info-leave-from {
+  opacity: 1 !important;
+  bottom: 175px !important;
+}
+
+.trans-cover-info-enter-active,
+.trans-cover-info-leave-active {
+  transition: all 0.23s cubic-bezier(0, 0.92, 0.48, 1.15) !important;
+}
+
+//底部控制栏动画
+.trans-bottom-enter-from,
+.trans-bottom-leave-to {
+  bottom: 10px !important;
+  filter: blur(1px);
+  opacity: 0.2 !important;
+}
+
+.trans-bottom-enter-to,
+.trans-bottom-leave-from {
+  opacity: 0.7 !important;
+  bottom: 50px !important;
+}
+
+.trans-bottom-enter-active {
+  transition: all 0.3s cubic-bezier(0, 0.92, 0.48, 1.15) !important;
+}
+.trans-bottom-leave-active {
+  transition: all 0.13s cubic-bezier(0, 0.92, 0.48, 1.15) !important;
+}
 </style>
