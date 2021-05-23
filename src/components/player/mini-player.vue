@@ -108,25 +108,50 @@ export default {
 .trans-mini-player-enter-from,
 .trans-mini-player-leave-to {
   background: transparent;
-  left: 180% !important;
-  opacity: 0.1 !important;
-  bottom: 37% !important;
-  /* position: relative; */
-  transform: scale(4.5);
+
+  visibility: hidden;
+  .cover-wrapper {
+    img {
+      visibility: hidden;
+      //position: fixed;
+      //top: 35%;
+      //width: 60% !important;
+      //height: 60% !important;
+      //left: 50%;
+      //transform: translate(-50%, -50%);
+    }
+  }
+
+  .song-info {
+    visibility: hidden;
+  }
 }
 
 .trans-mini-player-enter-to,
 .trans-mini-player-leave-from {
-  bottom: 0;
-  opacity: 1 !important;
-  z-index: 180 !important;
+  .song-info {
+    visibility: hidden!important;
+  }
 }
 
 .trans-mini-player-enter-active {
   transition: all 0.3s cubic-bezier(0.29, 1.02, 0, 1.03) !important;
+  .cover-wrapper {
+    img {
+      transition: all 0.23s cubic-bezier(0.250, 0.460, 0.450, 0.940) !important;
+    }
+  }
+  .song-info {
+    transition: all 0.01s 0.23s;
+  }
 }
 
 .trans-mini-player-leave-active {
-  transition: all 0.13s ease-out !important;
+  transition: all 0.3s ease-out !important;
+  .cover-wrapper {
+    img {
+      transition: all 0.23s cubic-bezier(0.250, 0.460, 0.450, 0.940) !important;
+    }
+  }
 }
 </style>

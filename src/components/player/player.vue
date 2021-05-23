@@ -714,15 +714,12 @@ export default {
     }
 
     .info {
-      position: absolute;
-      top: 20px;
       .cover-info {
         position: absolute;
-        bottom: 175px;
+        bottom: 25%;
         display: flex;
-        left: 50%;
-        transform: translate(-50%, 0);
         flex-direction: column;
+        width: 100%;
 
         .singer-name {
           font-size: 115%;
@@ -741,7 +738,8 @@ export default {
       }
 
       .lyric-info {
-        position: relative;
+        position: absolute;
+        top: 5%;
         z-index: 10;
         display: flex;
         flex-shrink: 0;
@@ -888,26 +886,42 @@ export default {
 
     &.trans-full-enter-from,
     &.trans-full-leave-to {
-      opacity: 0.2!important;
-      overflow: hidden!important;
-      top: 145px!important;
-      position: relative;
-      transform: scale(0.5);
+      bottom: -200px;
+      top: 200px;
+      opacity: 0.2;
+
+      .background {
+        opacity: 0.2;
+        top: 200px;
+      }
+
+      .cover, .info {
+        visibility: hidden;
+      }
     }
 
     &.trans-full-enter-to,
     &.trans-full-leave-from {
-      top: 0!important;
-      transform: scale(1);
-      opacity: 1 !important;
-      z-index: 150 !important;
+      top: 0;
+      opacity: 0.8 !important;
+      bottom: 0;
     }
 
     &.trans-full-enter-active {
-      transition: all 0.3s cubic-bezier(0.29, 1.02, 0, 1.03) !important;
+      transition: all 0.23s cubic-bezier(0.29, 1.02, 0, 1.03) !important;
+      .background {
+        transition: all 0.23s cubic-bezier(0.29, 1.02, 0, 1.03) !important;
+      }
+      .cover, .info {
+        transition: 0.23s 0.1s visibility ease;
+      }
     }
+
     &.trans-full-leave-active {
-      transition: all 0.13s ease-out !important;
+      transition: all 0.06s 0.13s ease-out !important;
+      .cover, .info {
+        transition: 0.06s visibility;
+      }
     }
   }
 }

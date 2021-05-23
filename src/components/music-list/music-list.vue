@@ -264,6 +264,7 @@ export default {
     display: flex;
     justify-content: space-between;
     margin: 8px 0;
+    padding: 0px 2%;
 
     .btn {
       box-sizing: border-box;
