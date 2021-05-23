@@ -261,7 +261,8 @@ export default {
     top: 0;
     z-index: 10;
     width: 100%;
-    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
     margin: 8px 0;
 
     .btn {
@@ -275,7 +276,7 @@ export default {
       height: 40px;
       display: inline-block;
       font-size: 0;
-      margin: 0 20px;
+      margin: 0 10px;
     }
 
     .text {

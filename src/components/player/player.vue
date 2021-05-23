@@ -1,112 +1,114 @@
 <template>
-  <div class="player">
-    <div class="full-screen-player"
-         v-show="isPlayerFullScreen"
-    >
-      <div class="background">
-        <img :src="currentPlaySong.pic" alt="">
-      </div>
-
-      <div class="top">
-        <div class="back"
-             @click="onBackClick"
-        >
-          <i class="icon-back"></i>
+  <div class="player"
+       v-show="playlist.length"
+  >
+    <transition name="trans-full">
+      <div class="full-screen-player"
+           v-show="isPlayerFullScreen"
+      >
+        <div class="background">
+          <img :src="currentPlaySong.pic" alt="">
         </div>
-      </div>
 
-      <div class="cover"
-           :style="coverStyle">
-        <div class="cover-content">
-          <div class="album-wrapper">
-            <div class="album">
-              <transition id="trans-cover" name="trans-cover">
-                <img
-                  :src="currentPlaySong.pic" alt="songPic"
-                  :class="{playing:isPlaying}"
-                  @click="onSongPicClick"
-                  v-show="!isShowLyric"
-                  key="songPic"
-                  class="img">
-              </transition>
+        <div class="top">
+          <div class="back"
+               @click="onBackClick"
+          >
+            <i class="icon-back"></i>
+          </div>
+        </div>
+
+        <div class="cover"
+             :style="coverStyle">
+          <div class="cover-content">
+            <div class="album-wrapper">
+              <div class="album">
+                <transition id="trans-cover" name="trans-cover">
+                  <img
+                    :src="currentPlaySong.pic" alt="songPic"
+                    :class="{playing:isPlaying}"
+                    @click="onSongPicClick"
+                    v-show="!isShowLyric"
+                    class="img">
+                </transition>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <transition name="trans-lyric">
-        <div class="lyric"
-             :style="lyricStyle"
-             v-show="isShowLyric"
-        >
-          <scroller
-            class="lyric-scroller"
-            ref="lyricScrollerRef"
-            :probe-type="1"
-            :momentum-limit-time="300"
-            :scrollX="false"
-            @scroll="onLyricScroll"
+        <transition name="trans-lyric">
+          <div class="lyric"
+               :style="lyricStyle"
+               v-show="isShowLyric"
           >
-            <div class="frame-lyrics">
-              <div
-                style="white-space:pre-wrap;"
-                v-if="currentLyric" ref="lyricListRef">
+            <scroller
+              class="lyric-scroller"
+              ref="lyricScrollerRef"
+              :probe-type="1"
+              :momentum-limit-time="300"
+              :scrollX="false"
+              @scroll="onLyricScroll"
+            >
+              <div class="frame-lyrics">
                 <div
-                  class="text"
-                  v-for="(line, index) in currentLyric.lines"
-                  :class="{'current':currentLineNum===index}"
-                  :key="line.num"
-                >
-                  {{ line.txt }}
+                  style="white-space:pre-wrap;"
+                  v-if="currentLyric" ref="lyricListRef">
+                  <div
+                    class="text"
+                    v-for="(line, index) in currentLyric.lines"
+                    :class="{'current':currentLineNum===index}"
+                    :key="line.num"
+                  >
+                    {{ line.txt }}
+                  </div>
                 </div>
               </div>
-            </div>
-          </scroller>
-        </div>
-      </transition>
-
-      <div class="info">
-        <transition name="trans-cover-info">
-          <div class="cover-info"
-               v-show="!isShowLyric"
-          >
-            <div class="song-title">{{ currentPlaySong.name }}</div>
-            <div class="singer-name">{{ currentPlaySong.singer }}</div>
+            </scroller>
           </div>
         </transition>
 
-        <div class="lyric-info"
-             v-show="isShowLyric"
-        >
-          <div class="image">
-            <img
-              :src="currentPlaySong.pic"
-              @click="onSongPicClick"
-              alt="songPic"
+        <div class="info">
+          <transition name="trans-cover-info">
+            <div class="cover-info"
+                 v-show="!isShowLyric"
             >
-          </div>
-          <transition name="trans-lyric-info-song">
-            <div class="song-info"
-                 v-show="isShowLyric">
               <div class="song-title">{{ currentPlaySong.name }}</div>
               <div class="singer-name">{{ currentPlaySong.singer }}</div>
             </div>
           </transition>
-        </div>
-      </div>
 
-      <transition name="trans-bottom">
-        <div class="bottom"
-             v-show="bottomStyle"
-        >
-          <div class="progress-wrapper">
-            <div class="progress-bar-wrapper">
-              <progress-bar
-                :progress="progress"
-                @progress-changing="onProgressChanging"
-                @progress-changed="onProgressChanged"
-              ></progress-bar>
+          <div class="lyric-info"
+               v-show="isShowLyric"
+          >
+            <div class="image">
+              <img
+                :src="currentPlaySong.pic"
+                @click="onSongPicClick"
+                alt="songPic"
+              >
             </div>
-            <div class="time-wrapper">
+            <transition name="trans-lyric-info-song">
+              <div class="song-info"
+                   v-show="isShowLyric">
+                <div class="song-title">{{ currentPlaySong.name }}</div>
+                <div class="singer-name">{{ currentPlaySong.singer }}</div>
+              </div>
+            </transition>
+          </div>
+        </div>
+
+        <transition name="trans-bottom">
+          <div class="bottom"
+               v-show="bottomStyle"
+          >
+            <div class="progress-wrapper">
+              <div class="progress-bar-wrapper">
+                <progress-bar
+                  :progress="progress"
+                  @progress-changing="onProgressChanging"
+                  @progress-changed="onProgressChanged"
+                ></progress-bar>
+              </div>
+              <div class="time-wrapper">
             <span
               class="time time-played"
               :class="{'time-covered':isProgressChangeCoverPlayTime}"
@@ -114,52 +116,54 @@
               {{
                 formatTime(currentTime)
               }}</span>
-              <span
-                class="time time-left"
-                :class="{'time-covered':isProgressChangeCoverLeftTime}"
-              >
+                <span
+                  class="time time-left"
+                  :class="{'time-covered':isProgressChangeCoverLeftTime}"
+                >
               -{{
-                  formatTime(currentPlaySong.duration - currentTime)
-                }}</span>
+                    formatTime(currentPlaySong.duration - currentTime)
+                  }}</span>
+              </div>
+            </div>
+            <div class="operators">
+              <div class="icon i-left">
+                <i @click="changeMode" :class="modeIcon"></i>
+              </div>
+              <div class="icon i-left" :class="disableClass">
+                <i class="icon-prev"
+                   @click="onPrevIconClick"
+                ></i>
+              </div>
+              <div class="icon i-center" :class="disableClass">
+                <i
+                  @click="onPlayIconClick"
+                  :class="playIconStyle"
+                ></i>
+              </div>
+              <div class="icon i-right" :class="disableClass">
+                <i class="icon-next"
+                   @click="onNextIconClick"
+                ></i>
+              </div>
+              <div class="icon i-right">
+                <i :class="getFavoriteIcon(currentPlaySong)"
+                   @click=onFavoriteIconClick(currentPlaySong)></i>
+              </div>
             </div>
           </div>
-          <div class="operators">
-            <div class="icon i-left">
-              <i @click="changeMode" :class="modeIcon"></i>
-            </div>
-            <div class="icon i-left" :class="disableClass">
-              <i class="icon-prev"
-                 @click="onPrevIconClick"
-              ></i>
-            </div>
-            <div class="icon i-center" :class="disableClass">
-              <i
-                @click="onPlayIconClick"
-                :class="playIconStyle"
-              ></i>
-            </div>
-            <div class="icon i-right" :class="disableClass">
-              <i class="icon-next"
-                 @click="onNextIconClick"
-              ></i>
-            </div>
-            <div class="icon i-right">
-              <i :class="getFavoriteIcon(currentPlaySong)"
-                 @click=onFavoriteIconClick(currentPlaySong)></i>
-            </div>
-          </div>
-        </div>
-      </transition>
+        </transition>
+      </div>
+    </transition>
 
-      <audio
-        ref="audioRef"
-        @pause="onAudioPause"
-        @canplay="onAudioCanPlay"
-        @timeupdate="onTimeUpdate"
-        @error="onAudioError"
-        @ended="onSongEnd"
-      ></audio>
-    </div>
+    <mini-player></mini-player>
+    <audio
+      ref="audioRef"
+      @pause="onAudioPause"
+      @canplay="onAudioCanPlay"
+      @timeupdate="onTimeUpdate"
+      @error="onAudioError"
+      @ended="onSongEnd"
+    ></audio>
   </div>
 </template>
 
@@ -173,12 +177,14 @@ import ProgressBar from '@/components/player/progress-bar'
 import { formatTime } from '@/assets/js/util'
 import { PLAY_MODE } from '@/assets/js/constant'
 import Scroller from '@/components/base/scroller/scroller'
+import MiniPlayer from './mini-player'
 
 export default {
   name: 'player',
   components: {
     ProgressBar,
-    Scroller
+    Scroller,
+    MiniPlayer
   },
   // 主播放功能逻辑
   setup () {
@@ -253,11 +259,7 @@ export default {
     const bottomStyle = computed(() => {
       if (isShowLyric.value) {
         if (isPlaying.value) {
-          if (isScrollLyric.value) {
-            return true
-          } else {
-            return false
-          }
+          return !!isScrollLyric.value
         } else {
           return true
         }
@@ -475,6 +477,7 @@ export default {
       audioRef,
       playIconStyle,
       disableClass,
+      playlist,
       progress,
       currentTime,
       isProgressChangeCoverPlayTime,
@@ -566,7 +569,7 @@ export default {
     }
 
     .cover {
-      position: fixed;
+      position: relative;
       width: 100%;
       top: 80px;
       z-index: 0;
@@ -711,6 +714,8 @@ export default {
     }
 
     .info {
+      position: absolute;
+      top: 20px;
       .cover-info {
         position: absolute;
         bottom: 175px;
@@ -880,6 +885,30 @@ export default {
         }
       }
     }
+
+    &.trans-full-enter-from,
+    &.trans-full-leave-to {
+      opacity: 0.2!important;
+      overflow: hidden!important;
+      top: 145px!important;
+      position: relative;
+      transform: scale(0.5);
+    }
+
+    &.trans-full-enter-to,
+    &.trans-full-leave-from {
+      top: 0!important;
+      transform: scale(1);
+      opacity: 1 !important;
+      z-index: 150 !important;
+    }
+
+    &.trans-full-enter-active {
+      transition: all 0.3s cubic-bezier(0.29, 1.02, 0, 1.03) !important;
+    }
+    &.trans-full-leave-active {
+      transition: all 0.13s ease-out !important;
+    }
   }
 }
 
@@ -917,7 +946,7 @@ export default {
 .trans-lyric-info-song-enter-to,
 .trans-lyric-info-song-leave-from {
   opacity: 1 !important;
-  top: 0px;
+  top: 0;
 }
 
 .trans-lyric-info-song-enter-active,
@@ -982,6 +1011,7 @@ export default {
 .trans-bottom-enter-active {
   transition: all 0.3s cubic-bezier(0, 0.92, 0.48, 1.15) !important;
 }
+
 .trans-bottom-leave-active {
   transition: all 0.13s cubic-bezier(0, 0.92, 0.48, 1.15) !important;
 }
