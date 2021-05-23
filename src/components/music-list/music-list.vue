@@ -5,8 +5,8 @@
          @click="goBack"></i>
     </div>
     <h1 class="title">{{ title }}</h1>
-    <div
-      ref="testDiv"
+    <div class="top-wrapper"
+         ref="testDiv"
     >
       <div class="bg-img"
            :style="bgImageStyle"
@@ -241,49 +241,54 @@ export default {
     color: $color-text;
   }
 
-  .bg-img {
-    position: relative;
-    width: 100%;
-    transform-origin: top;
-    background-size: cover;
-
-    .filter {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(7, 17, 27, 0.4);
-    }
-  }
-
-  .play-btn-wrapper {
+  .top-wrapper {
+    position: absolute;
     top: 0;
-    z-index: 10;
     width: 100%;
-    display: flex;
-    justify-content: space-between;
-    margin: 8px 0;
-    padding: 0px 2%;
 
-    .btn {
-      box-sizing: border-box;
-      width: 125px;
-      text-align: center;
-      border: 2px solid $color-theme;
-      color: $color-theme;
-      border-radius: 8px;
-      line-height: 36px;
-      height: 40px;
-      display: inline-block;
-      font-size: 0;
-      margin: 0 10px;
+    .bg-img {
+      position: relative;
+      width: 100%;
+      transform-origin: top;
+      background-size: cover;
+
+      .filter {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(7, 17, 27, 0.4);
+      }
     }
 
-    .text {
-      display: inline-block;
-      vertical-align: middle;
-      font-size: 20px;
+    .play-btn-wrapper {
+      top: 0;
+      z-index: 10;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      margin: 8px 0;
+
+      .btn {
+        box-sizing: border-box;
+        width: 125px;
+        text-align: center;
+        border: 2px solid $color-theme;
+        color: $color-theme;
+        border-radius: 8px;
+        line-height: 36px;
+        height: 40px;
+        display: inline-block;
+        font-size: 0;
+        margin: 0 10px;
+      }
+
+      .text {
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 20px;
+      }
     }
   }
 

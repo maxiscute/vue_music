@@ -2,7 +2,12 @@
   <div class="player"
        v-show="playlist.length"
   >
-    <transition name="trans-full">
+    <transition name="trans-full"
+                @enter="enter"
+                @after-enter="afterEnter"
+                @leave="leave"
+                @after-leave="afterLeave"
+    >
       <div class="full-screen-player"
            v-show="isPlayerFullScreen"
       >
@@ -28,6 +33,7 @@
                     :src="currentPlaySong.pic" alt="songPic"
                     :class="{playing:isPlaying}"
                     @click="onSongPicClick"
+                    ref="coverWrapperRef"
                     v-show="!isShowLyric"
                     class="img">
                 </transition>
@@ -104,6 +110,7 @@
               <div class="progress-bar-wrapper">
                 <progress-bar
                   :progress="progress"
+                  ref="progressRef"
                   @progress-changing="onProgressChanging"
                   @progress-changed="onProgressChanged"
                 ></progress-bar>
@@ -155,7 +162,9 @@
       </div>
     </transition>
 
-    <mini-player></mini-player>
+    <mini-player
+      :on-play-icon-click="onPlayIconClick"
+    ></mini-player>
     <audio
       ref="audioRef"
       @pause="onAudioPause"
@@ -169,15 +178,16 @@
 
 <script>
 import { useStore } from 'vuex'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import useMode from '@/components/player/use-mode'
 import useFavorite from '@/components/player/use-favorite'
 import useLyric from '@/components/player/use-lyric'
-import ProgressBar from '@/components/player/progress-bar'
+import useAnimation from './use-animation'
 import { formatTime } from '@/assets/js/util'
 import { PLAY_MODE } from '@/assets/js/constant'
 import Scroller from '@/components/base/scroller/scroller'
 import MiniPlayer from './mini-player'
+import ProgressBar from '@/components/player/progress-bar'
 
 export default {
   name: 'player',
@@ -190,6 +200,7 @@ export default {
   setup () {
     const store = useStore()
     const audioRef = ref(null)
+    const progressRef = ref(null)
     // 当前播放时间
     const currentTime = ref(0)
     // 缓冲能否播放
@@ -235,6 +246,14 @@ export default {
       songReady,
       currentTime
     })
+
+    const {
+      coverWrapperRef,
+      enter,
+      afterEnter,
+      leave,
+      afterLeave
+    } = useAnimation()
 
     const coverStyle = computed(() => {
       if (isShowLyric.value) {
@@ -316,6 +335,13 @@ export default {
         isScrollLyric.value = false
         styleTimeOut = true
       }, 12000)
+    })
+
+    watch(isPlayerFullScreen, async (newIsPlayerFullScreen) => {
+      if (newIsPlayerFullScreen) {
+        await nextTick()
+        progressRef.value.setOffset(progress.value)
+      }
     })
 
     // 单曲循环
@@ -475,6 +501,7 @@ export default {
       currentPlaySong,
       isPlayerFullScreen,
       audioRef,
+      progressRef,
       playIconStyle,
       disableClass,
       playlist,
@@ -513,7 +540,13 @@ export default {
       lyricListRef,
       currentLineNum,
       currentLyric,
-      pureMusicLyric
+      pureMusicLyric,
+      // use-animation
+      coverWrapperRef,
+      enter,
+      afterEnter,
+      leave,
+      afterLeave
     }
   }
 }
@@ -884,44 +917,22 @@ export default {
       }
     }
 
-    &.trans-full-enter-from,
-    &.trans-full-leave-to {
-      bottom: -200px;
-      top: 200px;
-      opacity: 0.2;
-
-      .background {
-        opacity: 0.2;
-        top: 200px;
-      }
-
-      .cover, .info {
-        visibility: hidden;
-      }
+    &.trans-full-enter-from {
+      transform: translate3d(0, 200px, 0);
+      opacity: 0.85;
     }
 
-    &.trans-full-enter-to,
-    &.trans-full-leave-from {
-      top: 0;
-      opacity: 0.8 !important;
-      bottom: 0;
+    &.trans-full-leave-to {
+      transform: translate3d(0, 400px, 0);
+      opacity: 0.2;
     }
 
     &.trans-full-enter-active {
       transition: all 0.23s cubic-bezier(0.29, 1.02, 0, 1.03) !important;
-      .background {
-        transition: all 0.23s cubic-bezier(0.29, 1.02, 0, 1.03) !important;
-      }
-      .cover, .info {
-        transition: 0.23s 0.1s visibility ease;
-      }
     }
 
     &.trans-full-leave-active {
-      transition: all 0.06s 0.13s ease-out !important;
-      .cover, .info {
-        transition: 0.06s visibility;
-      }
+      transition: all 0.06s 0.13s cubic-bezier(0.45, 0, 0.55, 1) !important;
     }
   }
 }
