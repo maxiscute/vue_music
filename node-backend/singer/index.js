@@ -4,11 +4,9 @@ const getSecuritySign = require('../sign')
 // 请求相关函数
 const { get } = require('../request')
 // utils
-const { getRandomVal } = require('../utils')
+const { getRandomVal, handleSongList } = require('../utils')
 
 const pinyin = require('pinyin')
-// 歌曲图片加载失败时使用的默认图片
-const fallbackPicUrl = 'https://y.gtimg.cn/mediastyle/music_v11/extra/default_300x300.jpg?max_age=31536000'
 
 // 响应成功code
 const CODE_OK = 0
@@ -200,36 +198,6 @@ function registerSingerDetail (app) {
   })
 }
 
-// 处理歌曲列表
-function handleSongList (list) {
-  const songList = []
-
-  list.forEach((item) => {
-    const info = item.songInfo || item
-    if (info.pay.pay_play !== 0 || !info.interval) {
-      // 过滤付费歌曲和获取不到时长的歌曲
-      return
-    }
-
-    // 构造歌曲的数据结构
-    const song = {
-      id: info.id,
-      mid: info.mid,
-      name: info.name,
-      singer: mergeSinger(info.singer),
-      url: '', // 在另一个接口获取
-      duration: info.interval,
-      pic: info.album.mid ? `https://y.gtimg.cn/music/photo_new/T002R800x800M000${info.album.mid}.jpg?max_age=2592000`
-        : fallbackPicUrl,
-      album: info.album.name
-    }
-
-    songList.push(song)
-  })
-
-  return songList
-}
-
 // 格式化歌手列表
 function normalizeSingers(singers) {
   if (Array.isArray(singers)) {
@@ -238,18 +206,6 @@ function normalizeSingers(singers) {
     })
   }
   return createSinger(singers)
-}
-
-// 合并多个歌手的姓名
-function mergeSinger (singer) {
-  const ret = []
-  if (!singer) {
-    return ''
-  }
-  singer.forEach((s) => {
-    ret.push(s.name)
-  })
-  return ret.join('/')
 }
 
 function createSinger(singer) {

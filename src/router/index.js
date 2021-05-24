@@ -4,15 +4,22 @@ import Singer from '@/views/singer'
 import TopList from '@/views/top-list'
 import Search from '@/views/search'
 import SingerDetail from '@/views/singer-detail'
+const Album = () => import('@/views/album'/* webpackChunkName: "album" */)
 
 const routes = [
   {
     path: '/',
-    redirect: '/recommend'
+    redirect: '/recommend/'
   },
   {
     path: '/recommend',
-    component: Recommend
+    component: Recommend,
+    children: [
+      {
+        path: ':id',
+        component: Album
+      }
+    ]
   },
   {
     path: '/singer',
@@ -35,7 +42,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHashHistory(process.env.BASE_URL),
   routes
 })
 

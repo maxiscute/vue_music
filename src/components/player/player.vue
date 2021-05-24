@@ -334,7 +334,7 @@ export default {
       timer = setTimeout(() => {
         isScrollLyric.value = false
         styleTimeOut = true
-      }, 12000)
+      }, 8000)
     })
 
     watch(isPlayerFullScreen, async (newIsPlayerFullScreen) => {
