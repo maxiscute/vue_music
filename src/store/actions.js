@@ -78,6 +78,10 @@ export function removeSongFromList ({
   commit('setSequenceList', sequenceList)
   commit('setPlayList', playlist)
   commit('setCurrentPlayIndex', currentPlayIndex)
+
+  if (!playlist.length) {
+    commit('setPlayerState', false)
+  }
 }
 
 // 寻找索引辅助函数

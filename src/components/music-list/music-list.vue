@@ -58,7 +58,7 @@
 <script>
 import Scroller from '@/components/base/scroller/scroller'
 import SongList from '@/components/base/song-list/song-list'
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 // 图片保留高度
 const RESERVE_HEIGHT = 40
@@ -186,8 +186,12 @@ export default {
       }
     },
     scrollerStyle () {
+      // console.log('scrollerStyle')
+      // console.log(this.playlist)
+      const bottom = this.playlist.length ? '60px' : '0'
       return {
-        top: `${this.imageHeight}px`
+        top: `${this.imageHeight}px`,
+        bottom
       }
     },
     filterStyle () {
@@ -202,7 +206,10 @@ export default {
       return {
         backdropFilter: `blur(${blur}px)`
       }
-    }
+    },
+    ...mapState([
+      'playlist'
+    ])
   }
 }
 </script>
