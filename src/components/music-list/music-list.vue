@@ -5,8 +5,8 @@
          @click="goBack"></i>
     </div>
     <h1 class="title">{{ title }}</h1>
-    <div
-      ref="testDiv"
+    <div class="top-wrapper"
+         ref="testDiv"
     >
       <div class="bg-img"
            :style="bgImageStyle"
@@ -58,7 +58,7 @@
 <script>
 import Scroller from '@/components/base/scroller/scroller'
 import SongList from '@/components/base/song-list/song-list'
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 // 图片保留高度
 const RESERVE_HEIGHT = 40
@@ -83,13 +83,13 @@ export default {
     // this.imageHeight = this.$refs.bgImage.clientHeight
     this.imageHeight = this.$refs.testDiv.clientHeight
     this.maxScrollY = this.imageHeight - RESERVE_HEIGHT
-    console.log('music-list mounted')
+    // console.log('music-list mounted')
     //   this.imageHeight)
     // console.log(this.$refs.bgImage)
-    console.log(this.loading)
-    console.log(this.noResult)
-    console.log(this.songs)
-    console.log(this.songs.length)
+    // console.log(this.loading)
+    // console.log(this.noResult)
+    // console.log(this.songs)
+    // console.log(this.songs.length)
   },
   props: {
     songs: {
@@ -186,8 +186,12 @@ export default {
       }
     },
     scrollerStyle () {
+      // console.log('scrollerStyle')
+      // console.log(this.playlist)
+      const bottom = this.playlist.length ? '60px' : '0'
       return {
-        top: `${this.imageHeight}px`
+        top: `${this.imageHeight}px`,
+        bottom
       }
     },
     filterStyle () {
@@ -202,7 +206,10 @@ export default {
       return {
         backdropFilter: `blur(${blur}px)`
       }
-    }
+    },
+    ...mapState([
+      'playlist'
+    ])
   }
 }
 </script>
@@ -241,47 +248,54 @@ export default {
     color: $color-text;
   }
 
-  .bg-img {
-    position: relative;
-    width: 100%;
-    transform-origin: top;
-    background-size: cover;
-
-    .filter {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(7, 17, 27, 0.4);
-    }
-  }
-
-  .play-btn-wrapper {
+  .top-wrapper {
+    position: absolute;
     top: 0;
-    z-index: 10;
     width: 100%;
-    padding: 0 20px;
-    margin: 8px 0;
 
-    .btn {
-      box-sizing: border-box;
-      width: 125px;
-      text-align: center;
-      border: 2px solid $color-theme;
-      color: $color-theme;
-      border-radius: 8px;
-      line-height: 36px;
-      height: 40px;
-      display: inline-block;
-      font-size: 0;
-      margin: 0 20px;
+    .bg-img {
+      position: relative;
+      width: 100%;
+      transform-origin: top;
+      background-size: cover;
+
+      .filter {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(7, 17, 27, 0.4);
+      }
     }
 
-    .text {
-      display: inline-block;
-      vertical-align: middle;
-      font-size: 20px;
+    .play-btn-wrapper {
+      top: 0;
+      z-index: 10;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      margin: 8px 0;
+
+      .btn {
+        box-sizing: border-box;
+        width: 125px;
+        text-align: center;
+        border: 2px solid $color-theme;
+        color: $color-theme;
+        border-radius: 8px;
+        line-height: 36px;
+        height: 40px;
+        display: inline-block;
+        font-size: 0;
+        margin: 0 10px;
+      }
+
+      .text {
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 20px;
+      }
     }
   }
 

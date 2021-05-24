@@ -18,6 +18,20 @@ const mutations = {
   },
   setIsPlayerFullScreen (state, isPlayerFullScreen) {
     state.isPlayerFullScreen = isPlayerFullScreen
+  },
+  setFavoriteList (state, favoriteList) {
+    state.favoriteList = favoriteList
+  },
+  setSongLyric (state, {
+    song,
+    lyric
+  }) {
+    state.sequenceList.map((item) => {
+      if (item.mid === song.mid) {
+        item.lyric = lyric
+      }
+      return item
+    })
   }
 }
 

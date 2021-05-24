@@ -1,8 +1,10 @@
 // 获取签名方法
+const Base64 = require('js-base64').Base64
 const getSecuritySign = require('../sign')
 // 请求相关函数
 const {
-  post
+  post,
+  get
 } = require('../request')
 // utils
 const { getRandomVal } = require('../utils')
@@ -102,6 +104,33 @@ function registerSongsUrl (app) {
   })
 }
 
+// 注册歌词接口
+function registerLyric (app) {
+  console.log('registerLyric')
+  app.get('/api/getLyric', (req, res) => {
+    const url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
+
+    get(url, {
+      '-': 'MusicJsonCallback_lrc',
+      pcachetime: +new Date(),
+      songmid: req.query.mid,
+      g_tk_new_20200303: token
+    }).then((response) => {
+      const data = response.data
+      if (data.code === CODE_OK) {
+        res.json({
+          code: CODE_OK,
+          result: {
+            lyric: Base64.decode(data.lyric)
+          }
+        })
+      } else {
+        res.json(data)
+      }
+    })
+  })
+}
+
 // 获取一个随机 uid
 function getUid () {
   const t = (new Date()).getUTCMilliseconds()
@@ -109,5 +138,6 @@ function getUid () {
 }
 
 module.exports = {
-  registerSongsUrl
+  registerSongsUrl,
+  registerLyric
 }
