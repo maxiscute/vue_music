@@ -19,6 +19,7 @@
             <li
               v-for="item in albums"
               class="recommend__list__item"
+              @click.stop="onAlbumItemClick(item)"
               :key="item.id"
             >
               <div class="recommend__list__item__icon">
@@ -39,7 +40,14 @@
         </div>
       </div>
     </scroller>
-
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component
+          :is="Component"
+          :data="clickedAlbum"
+        />
+      </transition>
+    </router-view>
   </div>
 </template>
 
@@ -47,6 +55,8 @@
 import { getRecommend } from '@/service/recommend'
 import Slider from '@/components/base/slider/slider'
 import Scroller from '@/components/base/scroller/scroller'
+import storage from 'good-storage'
+import { ALBUM_KEY } from '@/assets/js/constant'
 
 export default {
   name: 'recommend',
@@ -57,7 +67,8 @@ export default {
       // 歌单
       albums: [],
       // 加载文字
-      message: '正在载入中...'
+      message: '正在载入中...',
+      clickedAlbum: null
     }
   },
   computed: {
@@ -69,11 +80,26 @@ export default {
     Slider,
     Scroller
   },
+  methods: {
+    onAlbumItemClick (album) {
+      console.log('onAlbumItemClick', album)
+      // console.log(album.id)
+      this.clickedAlbum = album
+      this.cachedAlbum(album)
+      // console.log('push')
+      this.$router.push({
+        path: `/recommend/${album.id}`
+      })
+    },
+    cachedAlbum (album) {
+      storage.session.set(ALBUM_KEY, album)
+    }
+  },
   // 创建生命周期时获取轮播图、歌单
   async created () {
     // 使用请求服务返回处理后的结果
     const result = await getRecommend()
-    console.log(result)
+    console.log('recommend.vue created', result)
     this.sliders = result.sliders
     this.albums = result.albums
   }
