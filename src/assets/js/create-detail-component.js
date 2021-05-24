@@ -40,7 +40,7 @@ export default function createDetailComponent (name, key, fetchFunction) {
       },
       title () {
         const data = this.computedData
-        return data && data.name
+        return data && (data.name || data.title)
       }
     },
     async created () {
