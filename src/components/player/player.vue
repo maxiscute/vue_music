@@ -368,6 +368,7 @@ export default {
 
     // 返回按钮点击
     const onBackClick = () => {
+      isShowLyric.value = false
       store.commit('setIsPlayerFullScreen', false)
     }
 
@@ -927,12 +928,13 @@ export default {
       opacity: 0.2;
     }
 
+    //cubic-bezier(0.29, 1.02, 0, 1.03)
     &.trans-full-enter-active {
-      transition: all 0.23s cubic-bezier(0.29, 1.02, 0, 1.03) !important;
+      transition: all 0.34s cubic-bezier(0.45, 0, 0.55, 1) !important;
     }
 
     &.trans-full-leave-active {
-      transition: all 0.06s 0.13s cubic-bezier(0.45, 0, 0.55, 1) !important;
+      transition: all 0.26s 0.1s cubic-bezier(0.45, 0, 0.55, 1) !important;
     }
   }
 }
@@ -982,7 +984,7 @@ export default {
 //歌词动画
 .trans-lyric-enter-from,
 .trans-lyric-leave-to {
-  bottom: 170px !important;
+  bottom: 200px !important;
   top: 210px !important;
   opacity: 0.1 !important;
   filter: blur(2px) !important;
@@ -1016,7 +1018,7 @@ export default {
 
 .trans-cover-info-enter-active,
 .trans-cover-info-leave-active {
-  transition: all 0.23s cubic-bezier(0, 0.92, 0.48, 1.15) !important;
+  transition: all 0.23s cubic-bezier(0.45, 0, 0.55, 1) !important;
 }
 
 //底部控制栏动画

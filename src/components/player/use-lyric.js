@@ -53,7 +53,7 @@ export default function useLyric ({
         lyric.replace(/\[(\d{2}):(\d{2}):(\d{2})]/g, '')
     }
 
-    console.log(lyric)
+    // console.log(lyric)
   })
 
   const playLyric = () => {

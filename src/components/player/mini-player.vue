@@ -25,22 +25,28 @@
              @click.stop="onPlayIconClick"
           ></i>
         </div>
-        <div class="button-content">
+        <div class="button-content"
+             @click.stop="onShowPlaylistClick">
           <i class="icon-playlist"></i>
         </div>
       </div>
+      <Playlist ref="playlistRef"></Playlist>
     </div>
   </transition>
 </template>
 
 <script>
 import { useStore } from 'vuex'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import Playlist from '@/components/player/playlist'
 
 export default {
   name: 'mini-player',
   props: {
     onPlayIconClick: Function
+  },
+  components: {
+    Playlist
   },
   setup () {
     const store = useStore()
@@ -48,6 +54,7 @@ export default {
     const currentPlaySong = computed(() => store.getters.currentPlaySong)
     const playerState = computed(() => store.state.playerState)
 
+    const playlistRef = ref(null)
     const textStyle = computed(() => {
       if (isPlayerFullScreen.value) {
         return ''
@@ -64,12 +71,18 @@ export default {
       store.commit('setIsPlayerFullScreen', true)
     }
 
+    const onShowPlaylistClick = () => {
+      playlistRef.value.show()
+    }
+
     return {
       isPlayerFullScreen,
+      playlistRef,
       currentPlaySong,
       miniPlayIconCls,
       textStyle,
-      onMiniPlayerClick
+      onMiniPlayerClick,
+      onShowPlaylistClick
     }
   }
 }
@@ -153,45 +166,34 @@ export default {
 // 迷你播放器的动画
 .trans-mini-player-enter-from,
 .trans-mini-player-leave-to {
+  bottom: 100px;
+  opacity: 0.45;
   background: transparent;
-
-  display: none;
 
   .cover-wrapper {
     img {
-      display: none;
-      //position: fixed;
-      //top: 35%;
-      //width: 60% !important;
-      //height: 60% !important;
-      //left: 50%;
-      //transform: translate(-50%, -50%);
+      display: none !important;
     }
   }
 
-  .song-info {
-    display: none;
-  }
 }
 
 .trans-mini-player-enter-to,
 .trans-mini-player-leave-from {
-  .song-info {
-    display: none !important;
+  .cover-wrapper {
+    img {
+      display: none !important;
+    }
   }
 }
 
 .trans-mini-player-enter-active {
-  transition: all 0.3s cubic-bezier(0.29, 1.02, 0, 1.03) !important;
+  transition: all 0.3s cubic-bezier(0.45, 0, 0.55, 1) !important;
 
   .cover-wrapper {
     img {
-      transition: all 0.23s cubic-bezier(0.250, 0.460, 0.450, 0.940) !important;
+      transition: all 0.01s 0.3s ease !important;
     }
-  }
-
-  .song-info {
-    transition: all 0.01s 0.23s;
   }
 }
 
@@ -200,7 +202,7 @@ export default {
 
   .cover-wrapper {
     img {
-      transition: all 0.23s cubic-bezier(0.250, 0.460, 0.450, 0.940) !important;
+      transition: all 0.01s ease !important;
     }
   }
 }
