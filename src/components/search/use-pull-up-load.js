@@ -8,7 +8,7 @@ import { onMounted, onUnmounted, ref } from 'vue'
 BScroll.use(PullUp)
 BScroll.use(ObserveDOM)
 
-export default function usePullUpLoad (requestData) {
+export default function usePullUpLoad (requestData, preventPullUpLoad) {
   const scroller = ref(null)
   const rootRef = ref(null)
   const isPullUpLoad = ref(false)
@@ -23,6 +23,12 @@ export default function usePullUpLoad (requestData) {
     scrollerVal.on('pullingUp', pullingUpHandler)
 
     async function pullingUpHandler () {
+      // 防止加载中上拉加载
+      if (preventPullUpLoad.value) {
+        scrollerVal.finishPullUp()
+        return
+      }
+
       isPullUpLoad.value = true
       await requestData()
       scrollerVal.finishPullUp()
