@@ -9,6 +9,7 @@
       <li
         class="suggest-item"
         v-if="singer"
+        @click="onSingerClick(singer)"
       >
         <div class="icon">
           <i class="icon-mine"></i>
@@ -56,7 +57,7 @@ export default {
       default: true
     }
   },
-  emits: ['resultSongClick'],
+  emits: ['resultSongClick', 'resultSingerClick'],
   setup (props, { emit }) {
     const singer = ref(null)
     const songs = ref([])
@@ -142,6 +143,10 @@ export default {
       emit('resultSongClick', song)
     }
 
+    const onSingerClick = (singer) => {
+      emit('resultSingerClick', singer)
+    }
+
     return {
       singer,
       songs,
@@ -151,6 +156,7 @@ export default {
       noResultText,
       pullUpLoading,
       onSongClick,
+      onSingerClick,
       // pullUpload
       rootRef,
       isPullUpLoad

@@ -25,8 +25,17 @@
       <suggest
         :query="query"
         @result-song-click="onResultSongClick"
+        @result-singer-click="onResultSingerClick"
       ></suggest>
     </div>
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component
+          :is="Component"
+          :data="clickedSinger"
+        />
+      </transition>
+    </router-view>
   </div>
 </template>
 
@@ -36,6 +45,9 @@ import Suggest from '@/components/search/suggest'
 import { ref } from 'vue'
 import { getHotKeys } from '@/service/search'
 import { useStore } from 'vuex'
+import storage from 'good-storage'
+import { SINGER_KEY } from '@/assets/js/constant'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'search',
@@ -45,8 +57,10 @@ export default {
   },
   setup () {
     const store = useStore()
+    const router = useRouter()
     const query = ref('')
     const hotKeys = ref([])
+    const clickedSinger = ref(null)
 
     getHotKeys().then((result) => {
       hotKeys.value = result.hotKeys
@@ -61,11 +75,27 @@ export default {
       store.dispatch('addSong', song)
     }
 
+    const onResultSingerClick = (singer) => {
+      console.log('onResultSongClick', singer)
+      clickedSinger.value = singer
+      cacheSinger(singer)
+
+      router.push({
+        path: `/search/${singer.name.replace(/ /g, '_')}`
+      })
+    }
+
+    function cacheSinger (singer) {
+      storage.session.set(SINGER_KEY, singer)
+    }
+
     return {
       query,
       hotKeys,
+      clickedSinger,
       addQuery,
-      onResultSongClick
+      onResultSongClick,
+      onResultSingerClick
     }
   }
 }

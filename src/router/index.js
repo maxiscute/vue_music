@@ -5,6 +5,7 @@ import TopList from '@/views/top-list'
 import Search from '@/views/search'
 import SingerDetail from '@/views/singer-detail'
 import TopListDetail from '@/views/top-list-detail'
+
 const Album = () => import('@/views/album'/* webpackChunkName: "album" */)
 
 const routes = [
@@ -44,7 +45,13 @@ const routes = [
   },
   {
     path: '/search',
-    component: Search
+    component: Search,
+    children: [
+      {
+        path: ':id',
+        component: SingerDetail
+      }
+    ]
   }
 ]
 
