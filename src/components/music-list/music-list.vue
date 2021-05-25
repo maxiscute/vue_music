@@ -48,6 +48,7 @@
       <div class="song-list-wrapper">
         <song-list
           :songs="songs"
+          :rank="rank"
           @songItemClicked="onPlayItemClick"
         ></song-list>
       </div>
@@ -102,7 +103,8 @@ export default {
     noResultText: {
       type: String,
       default: '抱歉，没有可播放的歌曲'
-    }
+    },
+    rank: Boolean
   },
   methods: {
     onPlayItemClick ({
