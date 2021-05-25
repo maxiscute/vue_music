@@ -40,7 +40,15 @@ export function getLyric (song) {
     mid
   }).then((result) => {
     const lyric = result ? result.lyric : '[00:00:00]该歌曲暂无歌词'
-    lyricMap[mid] = lyric
-    return lyric
+    const decodeLyric = unescapeHTML(lyric)
+    lyricMap[mid] = decodeLyric
+    return decodeLyric
   })
+}
+
+const unescapeHTML = (a) => {
+  a = '' + a
+  return a.replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&').replace(/&quot;/g, '"')
+    .replace(/&apos;/g, '\'')
 }

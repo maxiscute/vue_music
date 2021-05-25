@@ -21,6 +21,7 @@
         class="suggest-item"
         v-for="song in songs"
         :key="song.id"
+        @click="onSongClick(song)"
       >
         <div class="icon">
           <i class="icon-music"></i>
@@ -55,7 +56,8 @@ export default {
       default: true
     }
   },
-  setup (props) {
+  emits: ['resultSongClick'],
+  setup (props, { emit }) {
     const singer = ref(null)
     const songs = ref([])
     const hasMore = ref(true)
@@ -136,6 +138,10 @@ export default {
       await onLessResult()
     }
 
+    const onSongClick = (song) => {
+      emit('resultSongClick', song)
+    }
+
     return {
       singer,
       songs,
@@ -144,6 +150,7 @@ export default {
       noResult,
       noResultText,
       pullUpLoading,
+      onSongClick,
       // pullUpload
       rootRef,
       isPullUpLoad

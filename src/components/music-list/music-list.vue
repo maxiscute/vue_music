@@ -81,16 +81,8 @@ export default {
     }
   },
   mounted () {
-    // this.imageHeight = this.$refs.bgImage.clientHeight
     this.imageHeight = this.$refs.testDiv.clientHeight
     this.maxScrollY = this.imageHeight - RESERVE_HEIGHT
-    // console.log('music-list mounted')
-    //   this.imageHeight)
-    // console.log(this.$refs.bgImage)
-    // console.log(this.loading)
-    // console.log(this.noResult)
-    // console.log(this.songs)
-    // console.log(this.songs.length)
   },
   props: {
     songs: {

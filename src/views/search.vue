@@ -24,6 +24,7 @@
     >
       <suggest
         :query="query"
+        @result-song-click="onResultSongClick"
       ></suggest>
     </div>
   </div>
@@ -34,6 +35,7 @@ import SearchInput from '@/components/search/search-input'
 import Suggest from '@/components/search/suggest'
 import { ref } from 'vue'
 import { getHotKeys } from '@/service/search'
+import { useStore } from 'vuex'
 
 export default {
   name: 'search',
@@ -42,6 +44,7 @@ export default {
     Suggest
   },
   setup () {
+    const store = useStore()
     const query = ref('')
     const hotKeys = ref([])
 
@@ -53,10 +56,16 @@ export default {
       query.value = searchWord
     }
 
+    const onResultSongClick = (song) => {
+      console.log('onResultSongClick', song)
+      store.dispatch('addSong', song)
+    }
+
     return {
       query,
       hotKeys,
-      addQuery
+      addQuery,
+      onResultSongClick
     }
   }
 }
