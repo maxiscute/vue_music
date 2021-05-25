@@ -3,7 +3,9 @@
     <div class="search-input-wrapper">
       <search-input v-model="query"></search-input>
     </div>
-    <div class="search-content">
+    <div class="search-content"
+         v-show="!query"
+    >
       <div class="hot-keys">
         <h1 class="title">热门搜索</h1>
         <ul>
@@ -17,18 +19,27 @@
         </ul>
       </div>
     </div>
+    <div class="search-result"
+         v-show="query"
+    >
+      <suggest
+        :query="query"
+      ></suggest>
+    </div>
   </div>
 </template>
 
 <script>
 import SearchInput from '@/components/search/search-input'
+import Suggest from '@/components/search/suggest'
 import { ref } from 'vue'
 import { getHotKeys } from '@/service/search'
 
 export default {
   name: 'search',
   components: {
-    SearchInput
+    SearchInput,
+    Suggest
   },
   setup () {
     const query = ref('')
@@ -62,7 +73,6 @@ export default {
 
   .search-input-wrapper {
     margin: 20px;
-
   }
 
   .search-content {
@@ -75,8 +85,7 @@ export default {
       .title {
         margin-bottom: 20px;
         font-size: $font-size-medium;
-        color: $color-text-l;
-
+        color: rgba(255, 255, 255, 0.8);
       }
 
       .item {
@@ -86,8 +95,7 @@ export default {
         border-radius: 6px;
         background: $color-highlight-background;
         font-size: $font-size-medium;
-        color: $color-text-d;
-
+        color: rgba(255, 255, 255, 0.75);
       }
 
     }
@@ -101,7 +109,7 @@ export default {
         align-items: center;
         height: 40px;
         font-size: $font-size-medium;
-        color: $color-text-l;
+        color: rgba(255, 255, 255, 0.75);
 
         .text {
           flex: 1;
