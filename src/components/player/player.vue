@@ -89,6 +89,7 @@
             <div class="image">
               <img
                 :src="currentPlaySong.pic"
+                ref="lyricCoverRef"
                 @click="onSongPicClick"
                 alt="songPic"
               >
@@ -215,7 +216,7 @@ export default {
     let timer = null
     const isProgressChangeCoverPlayTime = ref(false)
     const isProgressChangeCoverLeftTime = ref(false)
-    // 使数据为响应式的
+    // 响应式数据
     const isPlayerFullScreen = computed(() => store.state.isPlayerFullScreen)
     const currentPlaySong = computed(() => store.getters.currentPlaySong)
     // 是否在播放
@@ -251,11 +252,12 @@ export default {
 
     const {
       coverWrapperRef,
+      lyricCoverRef,
       enter,
       afterEnter,
       leave,
       afterLeave
-    } = useAnimation()
+    } = useAnimation(isShowLyric)
 
     const coverStyle = computed(() => {
       if (isShowLyric.value) {
@@ -370,7 +372,7 @@ export default {
 
     // 返回按钮点击
     const onBackClick = () => {
-      isShowLyric.value = false
+      // isShowLyric.value = false
       store.commit('setIsPlayerFullScreen', false)
     }
 
@@ -547,6 +549,7 @@ export default {
       pureMusicLyric,
       // use-animation
       coverWrapperRef,
+      lyricCoverRef,
       enter,
       afterEnter,
       leave,
@@ -778,7 +781,7 @@ export default {
 
       .lyric-info {
         position: absolute;
-        top: 5%;
+        top: 38px;
         width: 90%;
         z-index: 10;
         display: flex;
@@ -937,6 +940,7 @@ export default {
     &.trans-full-leave-to {
       transform: translate3d(0, 400px, 0);
       opacity: 0.2;
+      visibility: hidden;
     }
 
     //cubic-bezier(0.29, 1.02, 0, 1.03)

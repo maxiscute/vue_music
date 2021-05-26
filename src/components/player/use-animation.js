@@ -2,8 +2,9 @@ import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import animations from 'create-keyframe-animation'
 
-export default function useAnimation () {
+export default function useAnimation (isShowLyric) {
   const coverWrapperRef = ref(null)
+  const lyricCoverRef = ref(null)
   const store = useStore()
   const playerState = computed(() => store.state.playerState)
 
@@ -32,12 +33,17 @@ export default function useAnimation () {
       }
     })
 
-    animations.runAnimation(coverWrapperRef.value, 'move', done)
+    if (isShowLyric.value) {
+      animations.runAnimation(lyricCoverRef.value, 'move', done)
+    } else {
+      animations.runAnimation(coverWrapperRef.value, 'move', done)
+    }
   }
 
   const afterEnter = () => {
     animations.unregisterAnimation('move')
     coverWrapperRef.value.animation = ''
+    lyricCoverRef.value.animation = ''
   }
 
   const leave = (el, done) => {
@@ -77,7 +83,11 @@ export default function useAnimation () {
       }
     })
 
-    animations.runAnimation(coverWrapperRef.value, 'leave', done)
+    if (isShowLyric.value) {
+      animations.runAnimation(lyricCoverRef.value, 'leave', done)
+    } else {
+      animations.runAnimation(coverWrapperRef.value, 'leave', done)
+    }
   }
 
   const afterLeave = () => {
@@ -86,6 +96,7 @@ export default function useAnimation () {
     // coverWrapperEle.style.transform = ''
     animations.unregisterAnimation('leave')
     coverWrapperRef.value.animation = ''
+    lyricCoverRef.value.animation = ''
   }
 
   const getPosAndScale = () => {
@@ -93,18 +104,25 @@ export default function useAnimation () {
     // 到矩形正心位置
     const targetPaddingLeft = 40
     const targetPaddingBottom = 30
-    let PaddingTop
+    let paddingTop
     let width
-    if (playerState.value) {
-      PaddingTop = 80
-      width = window.innerWidth * 0.8
+    let x
+    if (!isShowLyric.value) {
+      if (playerState.value) {
+        paddingTop = 80
+        width = window.innerWidth * 0.8
+      } else {
+        paddingTop = 110
+        width = window.innerWidth * 0.64
+      }
+      x = -(window.innerWidth / 2 - targetPaddingLeft)
     } else {
-      PaddingTop = 110
-      width = window.innerWidth * 0.64
+      paddingTop = 79
+      width = 50
+      x = -(67 - targetPaddingLeft)
     }
 
-    const x = -(window.innerWidth / 2 - targetPaddingLeft)
-    const y = window.innerHeight - PaddingTop - width / 2 -
+    const y = window.innerHeight - paddingTop - width / 2 -
       targetPaddingBottom
     const scale = targetWidth / width
 
@@ -117,6 +135,7 @@ export default function useAnimation () {
 
   return {
     coverWrapperRef,
+    lyricCoverRef,
     enter,
     afterEnter,
     leave,
