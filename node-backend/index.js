@@ -9,6 +9,11 @@ const {
   registerLyric
 } = require('./song')
 
+const {
+  registerTopDetail,
+  registerTopList
+} = require('./top-list')
+
 const registerAlbum = require('./playlist')
 
 // 注册后端路由
@@ -23,6 +28,9 @@ function registerRouter (app) {
   registerLyric(app)
   // play-list
   registerAlbum(app)
+  // top-list
+  registerTopDetail(app)
+  registerTopList(app)
 }
 
 module.exports = registerRouter
