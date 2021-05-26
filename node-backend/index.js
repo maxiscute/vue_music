@@ -16,6 +16,11 @@ const {
 
 const registerAlbum = require('./playlist')
 
+const {
+  registerSearch,
+  registerHotKeys
+} = require('./search')
+
 // 注册后端路由
 function registerRouter (app) {
   // recommend
@@ -31,6 +36,9 @@ function registerRouter (app) {
   // top-list
   registerTopDetail(app)
   registerTopList(app)
+  // search
+  registerSearch(app)
+  registerHotKeys(app)
 }
 
 module.exports = registerRouter

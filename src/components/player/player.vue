@@ -84,6 +84,7 @@
 
           <div class="lyric-info"
                v-show="isShowLyric"
+               ref="lyricInfoRef"
           >
             <div class="image">
               <img
@@ -207,6 +208,7 @@ export default {
     const songReady = ref(false)
     const isScrollLyric = ref(false)
     const isShowLyric = ref(false)
+    const lyricInfoRef = ref(null)
 
     let progressChanging = false
     let styleTimeOut = true
@@ -266,12 +268,12 @@ export default {
     const lyricStyle = computed(() => {
       if (isPlaying.value) {
         if (isScrollLyric.value) {
-          return 'bottom:170px'
+          return 'bottom:170px;'
         } else {
-          return 'bottom:20px'
+          return 'bottom:20px;'
         }
       } else {
-        return 'bottom:170px'
+        return 'bottom:170px;'
       }
     })
 
@@ -503,6 +505,7 @@ export default {
       isPlayerFullScreen,
       audioRef,
       progressRef,
+      lyricInfoRef,
       playIconStyle,
       disableClass,
       playlist,
@@ -754,6 +757,7 @@ export default {
         display: flex;
         flex-direction: column;
         width: 100%;
+        align-items: center;
 
         .singer-name {
           font-size: 115%;
@@ -765,6 +769,7 @@ export default {
         }
 
         .song-title {
+          width: 85%;
           font-size: 130%;
           font-weight: 550;
           text-align: center;
@@ -774,6 +779,7 @@ export default {
       .lyric-info {
         position: absolute;
         top: 5%;
+        width: 90%;
         z-index: 10;
         display: flex;
         flex-shrink: 0;
@@ -793,9 +799,14 @@ export default {
 
         .song-info {
           position: relative;
+          width: inherit;
           top: 0;
 
           .song-title {
+            height: 26px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             font-size: 26px;
             font-weight: 500;
             color: rgba(255, 255, 255, 0.9);

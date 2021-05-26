@@ -84,6 +84,40 @@ export function removeSongFromList ({
   }
 }
 
+export function addSong ({
+  commit,
+  state
+}, song) {
+  console.log('addSong', song)
+  const playlist = state.playlist.slice()
+  const sequenceList = state.sequenceList.slice()
+
+  let currentPlayIndex = state.currentPlayIndex
+  const songIndex = findIndex(playlist, song)
+
+  console.log('songIndex', songIndex)
+  if (songIndex > -1) {
+    currentPlayIndex = songIndex
+  } else {
+    console.log('playlist push')
+    playlist.push(song)
+    currentPlayIndex = playlist.length - 1
+  }
+
+  const sequenceIndex = findIndex(sequenceList, song)
+  if (sequenceIndex === -1) {
+    console.log('se list push')
+
+    sequenceList.push(song)
+  }
+
+  commit('setSequenceList', sequenceList)
+  commit('setPlayList', playlist)
+  commit('setCurrentPlayIndex', currentPlayIndex)
+  commit('setPlayerState', true)
+  commit('setIsPlayerFullScreen', true)
+}
+
 // 寻找索引辅助函数
 const findIndex = (list, song) => {
   return list.findIndex((item) => {

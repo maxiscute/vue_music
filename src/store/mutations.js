@@ -32,6 +32,9 @@ const mutations = {
       }
       return item
     })
+  },
+  setSearchHistory (state, searchHistory) {
+    state.searchHistory = searchHistory
   }
 }
 

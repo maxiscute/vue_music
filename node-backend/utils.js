@@ -60,5 +60,6 @@ function mergeSinger (singer) {
 module.exports = {
   getRandomVal,
   getUid,
-  handleSongList
+  handleSongList,
+  mergeSinger
 }

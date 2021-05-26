@@ -17,7 +17,7 @@ export function processSongs (songs) {
       return song
     }).filter((song) => {
       // 存在该字段才可以播放
-      return song.url.indexOf('vkey') > -1
+      return song.url && song.url.indexOf('vkey') > -1
     })
   })
 }
@@ -40,7 +40,15 @@ export function getLyric (song) {
     mid
   }).then((result) => {
     const lyric = result ? result.lyric : '[00:00:00]该歌曲暂无歌词'
-    lyricMap[mid] = lyric
-    return lyric
+    const decodeLyric = unescapeHTML(lyric)
+    lyricMap[mid] = decodeLyric
+    return decodeLyric
   })
+}
+
+const unescapeHTML = (a) => {
+  a = '' + a
+  return a.replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&').replace(/&quot;/g, '"')
+    .replace(/&apos;/g, '\'')
 }
