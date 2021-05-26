@@ -3,22 +3,50 @@
     <div class="search-input-wrapper">
       <search-input v-model="query"></search-input>
     </div>
-    <div class="search-content"
-         v-show="!query"
+    <scroller class="search-content"
+              ref="scrollerRef"
+              v-show="!query"
     >
-      <div class="hot-keys">
-        <h1 class="title">热门搜索</h1>
-        <ul>
-          <li class="item"
-              v-for="item in hotKeys"
-              @click="addQuery(item.key)"
-              :key="item.id"
+      <div>
+        <div class="hot-keys">
+          <h1 class="title">热门搜索</h1>
+          <ul>
+            <li class="item"
+                v-for="item in hotKeys"
+                @click="addQuery(item.key)"
+                :key="item.id"
+            >
+              <span>{{ item.key }}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="search-history"
+             v-show="searchHistory.length"
+        >
+          <h1 class="title">
+            <span class="text">搜索历史</span>
+            <span class="clear"
+                  @click="onClearClick"
+            >
+              <i class="icon-clear"></i>
+            </span>
+          </h1>
+          <confirm
+            ref="confirmRef"
+            text="是否清空搜索历史"
+            confirm-btn-text="清空"
+            @confirm="clearSearchHistory"
           >
-            <span>{{ item.key }}</span>
-          </li>
-        </ul>
+          </confirm>
+          <search-list
+            :searches="searchHistory"
+            @search-history-item-click="addQuery"
+            @delete-search-history-item="deleteSearchHistoryItem"
+          >
+          </search-list>
+        </div>
       </div>
-    </div>
+    </scroller>
     <div class="search-result"
          v-show="query"
     >
@@ -42,18 +70,25 @@
 <script>
 import SearchInput from '@/components/search/search-input'
 import Suggest from '@/components/search/suggest'
-import { ref } from 'vue'
+import Scroller from '@/components/wrap-scroller'
+import Confirm from '@/components/base/confirm/confirm'
+import SearchList from '@/components/base/search-list/search-list'
+import { computed, nextTick, ref, watch } from 'vue'
 import { getHotKeys } from '@/service/search'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import storage from 'good-storage'
 import { SINGER_KEY } from '@/assets/js/constant'
-import { useRouter } from 'vue-router'
+import useSearchHistory from '@/components/search/use-search-history'
 
 export default {
   name: 'search',
   components: {
+    Scroller,
     SearchInput,
-    Suggest
+    Suggest,
+    SearchList,
+    Confirm
   },
   setup () {
     const store = useStore()
@@ -62,9 +97,31 @@ export default {
     const hotKeys = ref([])
     const clickedSinger = ref(null)
 
+    const scrollerRef = ref(null)
+    const confirmRef = ref(null)
+
+    const {
+      saveSearchHistory,
+      deleteSearchHistoryItem,
+      clearSearchHistory
+    } = useSearchHistory()
+
     getHotKeys().then((result) => {
       hotKeys.value = result.hotKeys
     })
+
+    const searchHistory = computed(() => store.state.searchHistory)
+
+    watch(query, async (newQuery) => {
+      if (!newQuery) {
+        await nextTick()
+        refreshScroll()
+      }
+    })
+
+    function refreshScroll () {
+      scrollerRef.value.scroll.refresh()
+    }
 
     const addQuery = (searchWord) => {
       query.value = searchWord
@@ -72,17 +129,24 @@ export default {
 
     const onResultSongClick = (song) => {
       console.log('onResultSongClick', song)
+      saveSearchHistory(query.value)
       store.dispatch('addSong', song)
     }
 
     const onResultSingerClick = (singer) => {
       console.log('onResultSongClick', singer)
+      saveSearchHistory(query.value)
+
       clickedSinger.value = singer
       cacheSinger(singer)
 
       router.push({
         path: `/search/${singer.name.replace(/ /g, '_')}`
       })
+    }
+
+    const onClearClick = () => {
+      confirmRef.value.show()
     }
 
     function cacheSinger (singer) {
@@ -93,9 +157,16 @@ export default {
       query,
       hotKeys,
       clickedSinger,
+      searchHistory,
+      scrollerRef,
+      confirmRef,
       addQuery,
+      clearSearchHistory,
       onResultSongClick,
-      onResultSingerClick
+      onResultSingerClick,
+      onClearClick,
+      // use-search-history
+      deleteSearchHistoryItem
     }
   }
 }

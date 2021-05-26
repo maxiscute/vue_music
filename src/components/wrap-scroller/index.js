@@ -1,4 +1,4 @@
-import Scroller from '@better-scroll/core/dist/types/scroller/Scroller'
+import Scroller from '@/components/base/scroller/scroller'
 import { computed, h, mergeProps, nextTick, ref, renderSlot, watch, withCtx } from 'vue'
 import { useStore } from 'vuex'
 
