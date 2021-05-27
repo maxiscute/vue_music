@@ -17,27 +17,32 @@
           ></search-input>
         </div>
         <div v-show="!query">
-          <switched
+          <switches
             :items="['最近播放', '搜索历史']"
             v-model="currentSwitchIndex"
-          ></switched>
+          ></switches>
           <div class="list-wrapper">
             <scroller class="list-scroll"
                       v-if="currentSwitchIndex===0"
+                      ref="scrollerRef"
             >
               <div class="list-inner">
                 <song-list
                   :songs="playHistory"
+                  @song-item-clicked="onHistorySongClick"
                 ></song-list>
               </div>
             </scroller>
 
             <scroller class="list-scroll"
-                      v-if="currentSwitchIndex===0"
+                      v-if="currentSwitchIndex===1"
+                      ref="scrollerRef"
             >
               <div class="list-inner">
                 <search-list
                   :searches="searchHistory"
+                  :show-delete="false"
+                  @search-history-item-click="addQuery"
                 ></search-list>
               </div>
             </scroller>
@@ -47,6 +52,7 @@
           <suggest
             :query="query"
             :show-singer="false"
+            @result-song-click="onSearchSongClick"
           >
           </suggest>
         </div>
@@ -58,41 +64,87 @@
 <script>
 import Suggest from '@/components/search/suggest'
 import SearchInput from '@/components/search/search-input'
-import { computed, ref } from 'vue';
 import SearchList from '@/components/base/search-list/search-list';
+import Scroller from '@/components/base/scroller/scroller'
+import Switches from '@/components/base/switches/switches'
+import SongList from '@/components/base/song-list/song-list'
+import { computed, nextTick, ref, watch } from 'vue';
 import { useStore } from 'vuex';
+import useSearchHistory from '@/components/search/use-search-history';
 
 export default {
   name: 'add-song',
   components: {
     SearchList,
     Suggest,
-    SearchInput
+    SearchInput,
+    Scroller,
+    SongList,
+    Switches
   },
   setup () {
     const addSongVisible = ref(false)
     const query = ref('')
     const currentSwitchIndex = ref(0)
+    const scrollerRef = ref(null)
 
     const store = useStore()
 
     const searchHistory = computed(() => store.state.searchHistory)
+    const playHistory = computed(() => store.state.playHistory)
 
-    const showAddSong = () => {
+    const { saveSearchHistory } = useSearchHistory()
+
+    watch(query, async () => {
+      await nextTick()
+      refreshScroller()
+    })
+
+    const showAddSong = async () => {
       addSongVisible.value = true
+
+      await nextTick()
+      refreshScroller()
     }
 
     const hideAddSong = () => {
       addSongVisible.value = false
     }
 
+    const addQuery = (s) => {
+      query.value = s
+    }
+
+    const onHistorySongClick = ({ song }) => {
+      addSong(song)
+    }
+
+    const onSearchSongClick = (song) => {
+      addSong(song)
+      saveSearchHistory(query.value)
+    }
+
+    const addSong = (song) => {
+      console.log('addSong');
+      store.dispatch('addSong', song)
+    }
+
+    const refreshScroller = () => {
+      scrollerRef.value.scroll.refresh()
+    }
+
     return {
       addSongVisible,
       query,
+      scrollerRef,
       currentSwitchIndex,
       searchHistory,
+      playHistory,
       showAddSong,
-      hideAddSong
+      hideAddSong,
+      addQuery,
+      onHistorySongClick,
+      onSearchSongClick
     }
   }
 }

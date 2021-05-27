@@ -185,6 +185,7 @@ import useMode from '@/components/player/use-mode'
 import useFavorite from '@/components/player/use-favorite'
 import useLyric from '@/components/player/use-lyric'
 import useAnimation from './use-animation'
+import usePlayHistory from './use-play-history'
 import { formatTime } from '@/assets/js/util'
 import { PLAY_MODE } from '@/assets/js/constant'
 import Scroller from '@/components/base/scroller/scroller'
@@ -258,6 +259,10 @@ export default {
       leave,
       afterLeave
     } = useAnimation(isShowLyric)
+
+    const {
+      savePlayHistory
+    } = usePlayHistory()
 
     const coverStyle = computed(() => {
       if (isShowLyric.value) {
@@ -441,6 +446,7 @@ export default {
       }
       songReady.value = true
       playLyric()
+      savePlayHistory(currentPlaySong.value)
     }
 
     const onTimeUpdate = (e) => {

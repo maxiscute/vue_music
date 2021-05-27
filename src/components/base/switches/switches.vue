@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     switchItem (index) {
-      this.$emit('ItemSwitch', index)
+      this.$emit('update:modelValue', index)
     }
   }
 }
