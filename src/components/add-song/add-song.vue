@@ -56,6 +56,12 @@
           >
           </suggest>
         </div>
+        <message ref="messageRef">
+          <div class="message-title">
+            <i class="icon-ok"></i>
+            <span class="text">歌曲已添加到播放列表</span>
+          </div>
+        </message>
       </div>
     </transition>
   </teleport>
@@ -68,6 +74,7 @@ import SearchList from '@/components/base/search-list/search-list';
 import Scroller from '@/components/base/scroller/scroller'
 import Switches from '@/components/base/switches/switches'
 import SongList from '@/components/base/song-list/song-list'
+import Message from '@/components/base/message/message'
 import { computed, nextTick, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import useSearchHistory from '@/components/search/use-search-history';
@@ -80,13 +87,16 @@ export default {
     SearchInput,
     Scroller,
     SongList,
-    Switches
+    Switches,
+    Message
   },
   setup () {
     const addSongVisible = ref(false)
     const query = ref('')
     const currentSwitchIndex = ref(0)
+
     const scrollerRef = ref(null)
+    const messageRef = ref(null)
 
     const store = useStore()
 
@@ -127,6 +137,7 @@ export default {
     const addSong = (song) => {
       console.log('addSong');
       store.dispatch('addSong', song)
+      messageRef.value.show()
     }
 
     const refreshScroller = () => {
@@ -137,6 +148,7 @@ export default {
       addSongVisible,
       query,
       scrollerRef,
+      messageRef,
       currentSwitchIndex,
       searchHistory,
       playHistory,
@@ -209,6 +221,23 @@ export default {
     top: 124px;
     bottom: 0;
     width: 100%;
+  }
+}
+
+.message-title {
+  text-align: center;
+  padding: 18px 0;
+  font-size: 0;
+
+  .icon-ok {
+    font-size: $font-size-medium;
+    color: $color-theme;
+    margin-right: 4px;
+  }
+
+  .text {
+    font-size: $font-size-medium;
+    color: $color-text;
   }
 }
 </style>
