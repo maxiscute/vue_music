@@ -49,12 +49,23 @@
             <span class="text"></span>
             <span class="favorite"></span>
           </scroller>
+          <div class="list-add">
+            <div class="add"
+                 @click="onAddSongShowClick"
+            >
+              <i class="icon-add"></i>
+              <span class="text">添加歌曲到队列</span>
+            </div>
+          </div>
           <div class="list-footer"
                @click.stop="hide"
           >
             <span>关闭</span>
           </div>
         </div>
+        <add-song
+          ref="addSongRef"
+        ></add-song>
       </div>
     </transition>
 
@@ -63,6 +74,7 @@
 
 <script>
 import Scroller from '@/components/base/scroller/scroller'
+import AddSong from '@/components/add-song/add-song'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import useMode from '@/components/player/use-mode'
@@ -70,12 +82,13 @@ import useFavorite from '@/components/player/use-favorite'
 
 export default {
   name: 'playlist',
-  components: { Scroller },
+  components: { Scroller, AddSong },
   setup () {
     const visible = ref(false)
     const scrollerRef = ref(null)
     const listRef = ref(null)
     const removing = ref(false)
+    const addSongRef = ref(null)
 
     const store = useStore()
     const playlist = computed(() => store.state.playlist)
@@ -159,12 +172,17 @@ export default {
       }, 300)
     }
 
+    const onAddSongShowClick = () => {
+      addSongRef.value.showAddSong()
+    }
+
     return {
       visible,
       removing,
       playlist,
       sequenceList,
       scrollerRef,
+      addSongRef,
       listRef,
       hide,
       show,
@@ -172,6 +190,7 @@ export default {
       scrollToCurrent,
       onSongItemClick,
       onDeleteClick,
+      onAddSongShowClick,
       // use-mode
       modeIcon,
       modeText,
