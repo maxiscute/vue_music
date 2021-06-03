@@ -2,7 +2,7 @@
   <div class="header">
     <span class="header__icon"></span>
     <h1 class="header__text">Oolong Music</h1>
-    <router-link class="header__mine" to="/user">
+    <router-link class="header__mine" to="/my">
       <i class="header__mine__icon"></i>
     </router-link>
   </div>
