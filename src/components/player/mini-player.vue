@@ -8,16 +8,31 @@
           <img :src="currentPlaySong.pic" alt="songPic">
         </div>
       </div>
-      <div class="song-info">
-        <div class="song-title"
-             :style="textStyle">
-          {{ currentPlaySong.name }}
-        </div>
-        <div class="singer-name"
-             :style="textStyle">
-          {{ currentPlaySong.singer }}
+      <div class="slider-wrapper"
+           ref="sliderWrapperRef"
+      >
+        <div class="slider-group">
+          <div class="slider-page"
+               v-for="song in playlist"
+               :key="song.id"
+          >
+            <div class="song-title">
+              {{ song.name }}
+            </div>
+            <div class="singer-name">
+              {{ song.singer }}
+            </div>
+          </div>
         </div>
       </div>
+<!--      <div class="song-info">-->
+<!--        <div class="song-title">-->
+<!--          {{ currentPlaySong.name }}-->
+<!--        </div>-->
+<!--        <div class="singer-name">-->
+<!--          {{ currentPlaySong.singer }}-->
+<!--        </div>-->
+<!--      </div>-->
       <div class="button-wrapper">
         <div class="button-content">
           <i class="icon-mini"
@@ -39,6 +54,7 @@
 import { useStore } from 'vuex'
 import { computed, ref } from 'vue'
 import Playlist from '@/components/player/playlist'
+import useSongSlider from './use-song-slider'
 
 export default {
   name: 'mini-player',
@@ -53,15 +69,10 @@ export default {
     const isPlayerFullScreen = computed(() => store.state.isPlayerFullScreen)
     const currentPlaySong = computed(() => store.getters.currentPlaySong)
     const playerState = computed(() => store.state.playerState)
+    const playlist = computed(() => store.state.playlist)
 
     const playlistRef = ref(null)
-    const textStyle = computed(() => {
-      if (isPlayerFullScreen.value) {
-        return ''
-      } else {
-        return ''
-      }
-    })
+    const { sliderWrapperRef } = useSongSlider()
 
     const miniPlayIconCls = computed(() => {
       return playerState.value ? 'icon-pause-mini' : 'icon-play-mini'
@@ -77,12 +88,14 @@ export default {
 
     return {
       isPlayerFullScreen,
+      playlist,
       playlistRef,
       currentPlaySong,
       miniPlayIconCls,
-      textStyle,
       onMiniPlayerClick,
-      onShowPlaylistClick
+      onShowPlaylistClick,
+      // use-song-slider
+      sliderWrapperRef
     }
   }
 }
@@ -113,6 +126,41 @@ export default {
       img {
         width: 40px;
         border-radius: 5px;
+      }
+    }
+  }
+
+  .slider-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    line-height: 20px;
+    overflow: hidden;
+    .slider-group {
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+      .slider-page {
+        display: inline-block;
+        width: 100%;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        .song-title {
+          margin-top: 8px;
+          font-weight: 450;
+          font-size: $font-size-medium;
+          color: $color-text;
+          @include no-wrap();
+          transition: all 0.23s ease;
+        }
+
+        .singer-name {
+          font-size: $font-size-small;
+          color: $color-text-d;
+          @include no-wrap();
+          transition: all 0.23s ease;
+        }
       }
     }
   }

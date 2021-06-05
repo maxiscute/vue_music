@@ -55,6 +55,10 @@ export default {
     showSinger: {
       type: Boolean,
       default: true
+    },
+    showDelete: {
+      type: Boolean,
+      default: true
     }
   },
   emits: ['resultSongClick', 'resultSingerClick'],

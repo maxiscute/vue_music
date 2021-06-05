@@ -3,7 +3,7 @@
 import BScroll from '@better-scroll/core'
 import PullUp from '@better-scroll/pull-up'
 import ObserveDOM from '@better-scroll/observe-dom'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onActivated, onDeactivated, onMounted, onUnmounted, ref } from 'vue'
 
 BScroll.use(PullUp)
 BScroll.use(ObserveDOM)
@@ -39,6 +39,16 @@ export default function usePullUpLoad (requestData, preventPullUpLoad) {
 
   onUnmounted(() => {
     scroller.value.destroy()
+  })
+
+  // keep-alive 优化
+  onActivated(() => {
+    scroller.value.enable()
+    scroller.value.refresh()
+  })
+
+  onDeactivated(() => {
+    scroller.value.disable()
   })
 
   return {
