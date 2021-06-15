@@ -14,8 +14,10 @@
     "@better-scroll/pull-up": "^2.3.1",
     "@better-scroll/slide": "^2.3.1",
     "axios": "^0.21.1",
+    "compression": "^1.7.4",
     "core-js": "^3.6.5",
     "create-keyframe-animation": "^0.1.0",
+    "express": "^4.17.1",
     "fibers": "^5.0.0",
     "good-storage": "^1.1.1",
     "js-base64": "^3.6.0",
@@ -34,11 +36,11 @@
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-plugin-router": "~4.5.0",
     "@vue/cli-plugin-vuex": "~4.5.0",
-    "pinyin": "^2.10.2",
     "@vue/cli-service": "~4.5.0",
     "@vue/compiler-sfc": "^3.0.0",
     "@vue/eslint-config-standard": "^5.1.2",
     "babel-eslint": "^10.1.0",
+    "cookie-parser": "^1.4.5",
     "eslint": "^6.7.2",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.1.0",
@@ -46,6 +48,7 @@
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^7.0.0",
     "node-sass": "^5.0.0",
+    "pinyin": "^2.10.2",
     "sass-loader": "^10.1.0"
   }
 }
