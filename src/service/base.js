@@ -21,7 +21,7 @@
 import axios from 'axios'
 
 const CODE_OK = 0
-const baseURL = process.env.NODE_ENV === 'production' ? '/' : '/'
+const baseURL = process.env.NODE_ENV === 'production' ? 'http://212.129.248.183/music/' : '/'
 
 axios.defaults.baseURL = baseURL
 
