@@ -28,7 +28,7 @@ export default function useAnimation (isShowLyric) {
       name: 'move',
       animation,
       presets: {
-        duration: 300,
+        duration: 250,
         easing: 'cubic-bezier(0.45, 0, 0.55, 1)'
       }
     })

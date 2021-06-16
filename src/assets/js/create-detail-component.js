@@ -28,7 +28,7 @@ export default function createDetailComponent (name, key, fetchFunction) {
           result = data
         } else {
           const cached = storage.session.get(key)
-          if (cached && (cached.id + '' || cached.name) === this.$route.params.id) {
+          if (cached && (cached.id + '' === this.$route.params.id || cached.name === this.$route.params.id)) {
             result = cached
           }
         }
@@ -47,7 +47,7 @@ export default function createDetailComponent (name, key, fetchFunction) {
       const data = this.computedData
       if (!data) {
         const path = this.$route.matched[0].path
-        this.$router.push({
+        await this.$router.push({
           path
         })
         return

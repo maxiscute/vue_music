@@ -214,7 +214,7 @@ export default {
 // 迷你播放器的动画
 .trans-mini-player-enter-from,
 .trans-mini-player-leave-to {
-  bottom: 100px;
+  transform: translate(0px, -100px);
   opacity: 0.45;
   background: transparent;
 
@@ -240,13 +240,13 @@ export default {
 
   .cover-wrapper {
     img {
-      transition: all 0.01s 0.3s ease !important;
+      transition: all 0.01s 0.2s ease !important;
     }
   }
 }
 
 .trans-mini-player-leave-active {
-  transition: all 0.3s ease-out !important;
+  transition: all 0.23s ease-out !important;
 
   .cover-wrapper {
     img {

@@ -13,6 +13,9 @@
 import createDetailComponent from '@/assets/js/create-detail-component'
 import { SINGER_KEY } from '@/assets/js/constant'
 import { getSingerDetail } from '@/service/singer'
+// import { processSongs } from '@/service/song';
+// import storage from 'good-storage';
+// import MusicList from '@/components/music-list/music-list'
 
 export default createDetailComponent('singer-detail',
   SINGER_KEY, getSingerDetail)
@@ -62,7 +65,7 @@ export default createDetailComponent('singer-detail',
 //     // console.log(this.singer)
 //     if (!this.computedSinger) {
 //       const path = this.$route.matched[0].path
-//       this.$router.push({
+//       await this.$router.push({
 //         path
 //       })
 //       return

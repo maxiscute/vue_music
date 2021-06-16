@@ -1,5 +1,5 @@
 // 本地存储的singer
-export const SINGER_KEY = '__singer__'
+export const SINGER_KEY = '__last_singer__'
 export const FAVORITE_KEY = '__favorite__'
 export const ALBUM_KEY = '__album'
 export const TOP_LIST_KEY = '__top_list__'

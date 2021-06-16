@@ -615,9 +615,12 @@ export default {
     }
 
     .cover {
-      position: relative;
+      //position: relative;
+      //width: 100%;
+      //top: 80px;
+      position: fixed;
       width: 100%;
-      top: 80px;
+      top: 100px;
       z-index: 0;
       bottom: 170px;
       white-space: nowrap;
@@ -651,7 +654,7 @@ export default {
               height: 80%; // 80%
               box-sizing: border-box;
               border-radius: 8px;
-              transition: all 0.4s cubic-bezier(0.09, 0.57, 0.58, 1);
+              transition: all 0.3s cubic-bezier(0.09, 0.57, 0.58, 1);
             }
 
             .playing {
@@ -660,7 +663,7 @@ export default {
               width: 100%; // 80%
               height: 100%; // 80%
               box-shadow: 0 15px 50px 0 rgb(0 0 0 / 80%);
-              transition: all 0.4s cubic-bezier(0.18, 0.89, 0.61, 1.64);
+              transition: all 0.3s cubic-bezier(0.18, 0.89, 0.61, 1.64);
             }
           }
         }
@@ -688,7 +691,7 @@ export default {
       bottom: 170px;
       white-space: nowrap;
       font-size: 0;
-      transition: all 0.37s ease-out;
+      transition: all 0.3s ease-out;
 
       .lyric-scroller {
         display: inline-block;
@@ -898,9 +901,9 @@ export default {
             float: left;
             position: relative;
             top: 0;
-            -webkit-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            -moz-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            -moz-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             //margin-top: -22px;
           }
 
@@ -910,9 +913,9 @@ export default {
             width: fit-content;
             position: relative;
             top: 0;
-            -webkit-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            -moz-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            -moz-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             //margin-top: -22px;
           }
         }
@@ -938,24 +941,18 @@ export default {
       }
     }
 
-    &.trans-full-enter-from {
-      transform: translate3d(0, 200px, 0);
-      opacity: 0.85;
-    }
-
-    &.trans-full-leave-to {
-      transform: translate3d(0, 400px, 0);
-      opacity: 0.2;
-      visibility: hidden;
+    &.trans-full-enter-from,&.trans-full-leave-to {
+      transform: translate3d(0, 100px, 0);
+      opacity: 0.65;
     }
 
     //cubic-bezier(0.29, 1.02, 0, 1.03)
     &.trans-full-enter-active {
-      transition: all 0.34s cubic-bezier(0.45, 0, 0.55, 1) !important;
+      transition: all 0.24s cubic-bezier(0.45, 0, 0.55, 1) !important;
     }
 
     &.trans-full-leave-active {
-      transition: all 0.26s 0.1s cubic-bezier(0.45, 0, 0.55, 1) !important;
+      transition: all 0.56s cubic-bezier(0.45, 0, 0.55, 1) !important;
     }
   }
 }
@@ -964,17 +961,14 @@ export default {
 .trans-cover-enter-from,
 .trans-cover-leave-to {
   opacity: 0.2 !important;
-  left: -6px !important;
-  top: -30px !important;
-  box-shadow: none !important;
-  width: 10px !important;
-  height: 10px !important;
+  transform: translate(-145px, -189px) scale(0.1);
   z-index: 10;
 }
 
 .trans-cover-enter-to,
 .trans-cover-leave-from {
   opacity: 1 !important;
+  transform: translate(0, 0) scale(1);
   z-index: 30 !important;
 }
 
@@ -986,15 +980,15 @@ export default {
 //歌词页歌曲信息的动画
 .trans-lyric-info-song-enter-from,
 .trans-lyric-info-song-leave-to {
-  top: 70px !important;
+  transform: translate(0px, 100px);
   opacity: 0.1;
   z-index: 5;
 }
 
 .trans-lyric-info-song-enter-to,
 .trans-lyric-info-song-leave-from {
-  opacity: 1 !important;
-  top: 0;
+  transform: translate(0, 0);
+  opacity: 1;
 }
 
 .trans-lyric-info-song-enter-active,
@@ -1005,8 +999,7 @@ export default {
 //歌词动画
 .trans-lyric-enter-from,
 .trans-lyric-leave-to {
-  bottom: 200px !important;
-  top: 210px !important;
+  transform: translate(0px, 50px) rotateX(55deg);
   opacity: 0.1 !important;
   filter: blur(2px) !important;
   z-index: 5 !important;
@@ -1019,22 +1012,20 @@ export default {
 
 .trans-lyric-enter-active,
 .trans-lyric-leave-active {
-  transition: bottom 0.1s ease-in, top 0.1s ease-in,
-  opacity 0.2s ease-in, filter 0.2s ease-in !important;
+  transition: all 0.2s ease-in !important;
 }
 
 //封面页歌曲信息动画
 .trans-cover-info-enter-from,
 .trans-cover-info-leave-to {
-  bottom: 400px !important;
+  transform: translate(0px, -135px);
   opacity: 0.2 !important;
   filter: blur(2px) !important;
 }
 
 .trans-cover-info-enter-to,
 .trans-cover-info-leave-from {
-  opacity: 1 !important;
-  bottom: 175px !important;
+  opacity: 1;
 }
 
 .trans-cover-info-enter-active,
@@ -1045,7 +1036,7 @@ export default {
 //底部控制栏动画
 .trans-bottom-enter-from,
 .trans-bottom-leave-to {
-  bottom: 10px !important;
+  transform: translate(0px, 40px);
   filter: blur(1px);
   opacity: 0.2 !important;
 }
@@ -1053,7 +1044,6 @@ export default {
 .trans-bottom-enter-to,
 .trans-bottom-leave-from {
   opacity: 0.7 !important;
-  bottom: 50px !important;
 }
 
 .trans-bottom-enter-active {
@@ -1063,4 +1053,5 @@ export default {
 .trans-bottom-leave-active {
   transition: all 0.13s cubic-bezier(0, 0.92, 0.48, 1.15) !important;
 }
+
 </style>

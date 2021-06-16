@@ -52,7 +52,11 @@ export default {
       })
     },
     cacheSinger (singer) {
+      console.log('cache singer is', storage.session.get(SINGER_KEY));
       storage.session.set(SINGER_KEY, singer)
+      console.log('singer cached');
+      console.log(singer);
+      console.log('now cache singer is', storage.session.get(SINGER_KEY));
     }
   },
   components: {
