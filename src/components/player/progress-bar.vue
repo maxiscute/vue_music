@@ -9,14 +9,15 @@
         :style="progressStyle"
         ref="progressRef"
       ></div>
-      <div class="progress-btn-wrapper">
+      <div class="progress-btn-wrapper"
+           :style="btnStyle"
+           @touchstart.prevent="onTouchStart"
+           @touchmove.prevent="onTouchMove"
+           @touchend.prevent="onTouchEnd"
+      >
         <div
           class="progress-btn"
-          :style="btnStyle"
           :class="{ 'progress-btn-active':isSlider }"
-          @touchstart.prevent="onTouchStart"
-          @touchmove.prevent="onTouchMove"
-          @touchend.prevent="onTouchEnd"
         ></div>
       </div>
     </div>
@@ -133,6 +134,7 @@ export default {
         border: 3px solid $color-text;
         border-radius: 50%;
         background: $color-theme;
+        transition: 0.1s ease;
       }
 
       .progress-btn-active {
